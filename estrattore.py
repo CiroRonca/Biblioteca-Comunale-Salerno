@@ -1,82 +1,67 @@
-import re
+import pandas as pd
 import json
-from pypdf import PdfReader
 
-def genera_json_catalogo(file_input_pdf, file_output_json):
-    print("Sto leggendo il PDF originale per il sito web...")
+def converti_excel_in_json(file_excel, file_json):
+    print("Sto leggendo il tuo file Excel perfetto...")
     
+    # 1. Leggiamo l'Excel con Pandas (usando read_excel al posto di read_csv)
     try:
-        reader = PdfReader(file_input_pdf)
-        testo_completo = ""
-        for page in reader.pages:
-            testo_estratto = page.extract_text()
-            if testo_estratto:
-                testo_completo += testo_estratto + "\n"
-    except Exception as e:
-        print(f"Errore durante la lettura del PDF: {e}")
+        df = pd.read_excel(file_excel)
+    except FileNotFoundError:
+        print(f"Errore: Non trovo il file '{file_excel}'. Assicurati che sia nella stessa cartella!")
         return
-
-    testo_completo = testo_completo.replace('Scansionato con CamScanner', '')
-    blocchi = re.split(r'\[[a-zA-Z0-9]\]\s*-?', testo_completo)
+    except ImportError:
+        print("Errore: Manca la libreria per leggere i file Excel. Scrivi nel terminale: pip install openpyxl")
+        return
 
     catalogo_json = []
     
     # Colori per dare un bell'effetto grafico alternato alle schede del tuo sito
     colori = ["#1B3A5C", "#2E6DA4", "#C4622D", "#E8A838", "#3A6B4A", "#6B4C3B"]
 
-    for i, blocco in enumerate(blocchi):
-        b = re.sub(r'\s+', ' ', blocco).strip()
-        if not b: continue
-            
-        try:
-            if '/' not in b: continue
-            parti_slash = b.split('/', 1)
-            titolo = parti_slash[0].strip()
-            resto = parti_slash[1]
-            
-            match_autore = re.search(r'(.*?)\.\s*-', resto)
-            if not match_autore: continue
-            autore = match_autore.group(1).strip()
-            resto = resto[match_autore.end():]
-            
-            match_pagine = re.search(r'(\d+)\s*p\.', resto)
-            pagine = match_pagine.group(1) if match_pagine else "N/D"
-            
-            if 'cm.' in resto:
-                codice = resto.split('cm.')[-1].strip()
-            else:
-                codice = "N/D"
-            
-            # Piccolo sistema per intuire il genere
-            genere = "Varia"
-            t_lower = titolo.lower()
-            if "storia" in t_lower or "guerra" in t_lower: genere = "Storia"
-            elif "filosofia" in t_lower: genere = "Filosofia"
-            elif "diritto" in t_lower or "giuridica" in t_lower: genere = "Diritto"
-            
-            libro = {
-                "id": i,
-                "titolo": titolo,
-                "autore": autore,
-                "anno": "N/D",           
-                "editore": "N/D",        
-                "genere": genere,       
-                "disponibile": True,     
-                "colore": colori[i % len(colori)], 
-                "desc": f"Pagine: {pagine} | Codice Collocazione: {codice}"
-            }
-            catalogo_json.append(libro)
-            
-        except Exception:
-            continue
+    # 2. Scorriamo ogni riga del foglio Excel
+    for index, row in df.iterrows():
+        # Prendiamo i dati, se una cella è vuota (NaN) ci mettiamo "N/D"
+        titolo = str(row['Titolo']) if pd.notna(row.get('Titolo')) else "N/D"
+        autore = str(row['Autore']) if pd.notna(row.get('Autore')) else "N/D"
+        pagine = str(row['Pagine']) if pd.notna(row.get('Pagine')) else "N/D"
+        codice = str(row['Codice']) if pd.notna(row.get('Codice')) else "N/D"
+        
+        # Piccola pulizia extra
+        titolo = titolo.replace('Scansionato con CamScanner', '').strip()
+        autore = autore.replace('Scansionato con CamScanner', '').strip()
+        
+        # Sistema per intuire il genere dal titolo
+        genere = "Varia"
+        t_lower = titolo.lower()
+        if "storia" in t_lower or "guerra" in t_lower: genere = "Storia"
+        elif "filosofia" in t_lower: genere = "Filosofia"
+        elif "diritto" in t_lower or "giustizia" in t_lower: genere = "Diritto"
+        elif "romanzo" in t_lower or "poesia" in t_lower: genere = "Letteratura"
+        
+        # 3. Creiamo la scheda del libro
+        libro = {
+            "id": index,
+            "titolo": titolo,
+            "autore": autore,
+            "anno": "N/D",           
+            "editore": "N/D",        
+            "genere": genere,       
+            "disponibile": True,     
+            "colore": colori[index % len(colori)], 
+            "desc": f"Pagine: {pagine} | Codice Collocazione: {codice}"
+        }
+        catalogo_json.append(libro)
 
-    # Salviamo il file JSON
-    with open(file_output_json, 'w', encoding='utf-8') as f:
+    # 4. Salviamo il file JSON
+    with open(file_json, 'w', encoding='utf-8') as f:
         json.dump(catalogo_json, f, ensure_ascii=False, indent=4)
         
-    print(f"MAGIA FATTA! Creato il file '{file_output_json}' con {len(catalogo_json)} libri pronti per il sito!")
+    print(f"\nMAGIA FATTA! Creato il file '{file_json}' con {len(catalogo_json)} libri pronti per il sito!")
 
 # --- AVVIO DELLO SCRIPT ---
-FILE_INPUT = 'Prima-parte-catalogo-1.pdf'  
-FILE_OUTPUT = 'catalogo.json'
-genera_json_catalogo(FILE_INPUT, FILE_OUTPUT)
+# Qui passiamo il tuo file Excel
+FILE_EXCEL = 'CatalogoGS.xlsx' 
+FILE_JSON = 'catalogo.json'
+
+converti_excel_in_json(FILE_EXCEL, FILE_JSON)
