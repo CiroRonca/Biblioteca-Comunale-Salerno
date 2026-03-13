@@ -101,24 +101,8 @@
       color: var(--terracotta); 
     }
 
-    /* Pagina Attiva */
-    .nav-links a.active {
-      color: var(--terracotta);
-      font-weight: 700;
-    }
-
-    /* Pallino sotto la pagina attiva */
-    .nav-links a.active::after {
-      content: '';
-      position: absolute;
-      bottom: -6px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 5px;
-      height: 5px;
-      background-color: var(--terracotta);
-      border-radius: 50%;
-    }
+    .nav-links a.active { color: var(--terracotta); }
+    .nav-links a.active::after { width: 100%; }
 
     /* Bottone Accedi */
     .nav-links .nav-cta {
@@ -135,9 +119,6 @@
       color: white;
     }
     
-    .nav-links .nav-cta.active::after {
-      display: none; /* Niente pallino sotto il bottone */
-    }
 
     /* ── HERO CATALOGO ── */
     .catalogo-hero {
