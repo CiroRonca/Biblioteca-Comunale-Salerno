@@ -77,17 +77,67 @@
       font-weight: 300; letter-spacing: 0.08em; text-transform: uppercase;
     }
 
-    .nav-back {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 13px; font-weight: 500; color: var(--grigio-medio);
-      text-decoration: none;
-      letter-spacing: 0.04em; text-transform: uppercase;
-      transition: color 0.2s;
+    /* ── MENU DI NAVIGAZIONE ── */
+    .nav-links {
+      display: flex;
+      list-style: none;
+      align-items: center;
+      gap: 32px;
+      margin: 0;
+      padding: 0;
     }
 
-    .nav-back:hover { color: var(--terracotta); }
+    .nav-links a {
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--grigio-scuro);
+      position: relative;
+      transition: color 0.3s ease;
+      letter-spacing: 0.02em;
+    }
 
-    .nav-back svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .nav-links a:hover {
+      color: var(--terracotta); 
+    }
+
+    /* Pagina Attiva */
+    .nav-links a.active {
+      color: var(--terracotta);
+      font-weight: 700;
+    }
+
+    /* Pallino sotto la pagina attiva */
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      background-color: var(--terracotta);
+      border-radius: 50%;
+    }
+
+    /* Bottone Accedi */
+    .nav-links .nav-cta {
+      background: var(--terracotta);
+      color: white;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      transition: background 0.3s ease;
+    }
+
+    .nav-links .nav-cta:hover {
+      background: #a8501f;
+      color: white;
+    }
+    
+    .nav-links .nav-cta.active::after {
+      display: none; /* Niente pallino sotto il bottone */
+    }
 
     /* ── HERO CATALOGO ── */
     .catalogo-hero {
@@ -587,7 +637,7 @@
   <div class="catalogo-hero-inner">
     <div class="catalogo-tag">📚 Catalogo Libri</div>
     <h1>Cerca tra i nostri<br><em>volumi</em></h1>
-    <p>Oltre 4.000 titoli disponibili. Cerca per titolo, autore o genere e scopri cosa ti aspetta in biblioteca.</p>
+    <p>Oltre 3.400 titoli disponibili. Cerca per titolo, autore o genere e scopri cosa ti aspetta in biblioteca.</p>
   </div>
 </div>
 
