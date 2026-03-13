@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chi Siamo — Biblioteca Comunale Salerno</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blu-mare: #1B3A5C;
+      --blu-cielo: #2E6DA4;
+      --terracotta: #C4622D;
+      --oro-sole: #E8A838;
+      --sabbia: #F5EDD8;
+      --bianco: #FDFAF4;
+      --grigio-scuro: #1A1A1A;
+      --grigio-medio: #6B6B6B;
+      --verde-patio: #3A6B4A;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bianco);
+      color: var(--grigio-scuro);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 72px;
+      background: rgba(253, 250, 244, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(196, 98, 45, 0.15);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 40px; height: 40px;
+      background: var(--terracotta);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 20px;
+      color: white;
+      letter-spacing: -1px;
+    }
+
+    .nav-logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .nav-logo-text span:first-child {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--blu-mare);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .nav-logo-text span:last-child {
+      font-size: 11px;
+      color: var(--grigio-medio);
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--grigio-scuro);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      position: relative;
+      padding-bottom: 2px;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--terracotta);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-links a.active { color: var(--terracotta); }
+    .nav-links a.active::after { width: 100%; }
+
+    .nav-cta {
+      background: var(--terracotta);
+      color: white !important;
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-weight: 600 !important;
+    }
+
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: #a8501f !important; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding-top: 72px;
+      background: linear-gradient(135deg, var(--blu-mare) 0%, #2a4f7a 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: rgba(232, 168, 56, 0.08);
+      pointer-events: none;
+    }
+
+    .page-header::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -60px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: rgba(196, 98, 45, 0.07);
+      pointer-events: none;
+    }
+
+    .page-header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 80px 48px 72px;
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .page-header-eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--oro-sole);
+      margin-bottom: 20px;
+    }
+
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 6vw, 68px);
+      font-weight: 900;
+      color: white;
+      line-height: 1.05;
+      margin-bottom: 24px;
+    }
+
+    .page-header h1 em {
+      font-style: italic;
+      color: var(--oro-sole);
+    }
+
+    .page-header-desc {
+      font-size: 17px;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.7;
+      max-width: 600px;
+      margin: 0 auto;
+      font-weight: 300;
+    }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 48px 100px;
+    }
+
+    /* ── INTRO SECTION ── */
+    .intro-section {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 80px;
+      align-items: start;
+      margin-bottom: 100px;
+    }
+
+    .intro-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--blu-mare);
+      line-height: 1.2;
+      margin-bottom: 28px;
+    }
+
+    .intro-text p {
+      font-size: 17px;
+      line-height: 1.85;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .intro-text p strong {
+      color: var(--terracotta);
+      font-weight: 600;
+    }
+
+    .intro-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ── STAT SIDEBAR ── */
+    .stat-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: sticky;
+      top: 100px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid rgba(196, 98, 45, 0.12);
+      border-radius: 12px;
+      padding: 28px 24px;
+      border-left: 4px solid var(--terracotta);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-card:nth-child(2) { border-left-color: var(--blu-cielo); }
+    .stat-card:nth-child(3) { border-left-color: var(--verde-patio); }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    }
+
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      font-weight: 900;
+      color: var(--blu-mare);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--grigio-medio);
+    }
+
+    /* ── SEZIONI LIBRARY ── */
+    .sezioni-section {
+      margin-bottom: 100px;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--terracotta);
+      margin-bottom: 16px;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 24px; height: 1.5px;
+      background: var(--terracotta);
+    }
+
+    .sezioni-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--blu-mare);
+      margin-bottom: 44px;
+    }
+
+    .sezioni-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .sezione-card {
+      background: var(--sabbia);
+      border-radius: 16px;
+      padding: 36px 28px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sezione-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+
+    .sezione-card:nth-child(1)::before { background: var(--terracotta); }
+    .sezione-card:nth-child(2)::before { background: var(--blu-cielo); }
+    .sezione-card:nth-child(3)::before { background: var(--verde-patio); }
+
+    .sezione-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.10);
+    }
+
+    .sezione-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+
+    .sezione-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--blu-mare);
+      margin-bottom: 10px;
+    }
+
+    .sezione-card p {
+      font-size: 14px;
+      color: var(--grigio-medio);
+      line-height: 1.7;
+    }
+
+    /* ── FOTO DI GRUPPO ── */
+    .foto-section {
+      margin-bottom: 100px;
+    }
+
+    .foto-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--blu-mare);
+      margin-bottom: 44px;
+    }
+
+    .foto-wrapper {
+      background: white;
+      border-radius: 20px;
+      border: 2px dashed rgba(196, 98, 45, 0.30);
+      overflow: hidden;
+      position: relative;
+      min-height: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.3s ease, background 0.3s ease;
+      cursor: pointer;
+    }
+
+    .foto-wrapper:hover {
+      border-color: var(--terracotta);
+      background: rgba(245, 237, 216, 0.3);
+    }
+
+    /* Quando contiene un'immagine reale, nascondi il placeholder */
+    .foto-wrapper.has-photo .foto-placeholder { display: none; }
+    .foto-wrapper.has-photo img.foto-reale { display: block; }
+
+    img.foto-reale {
+      display: none;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 18px;
+    }
+
+    .foto-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      text-align: center;
+      padding: 60px;
+    }
+
+    .foto-placeholder-icon {
+      width: 80px; height: 80px;
+      background: var(--sabbia);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+
+    .foto-placeholder h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--blu-mare);
+    }
+
+    .foto-placeholder p {
+      font-size: 15px;
+      color: var(--grigio-medio);
+      max-width: 340px;
+      line-height: 1.6;
+    }
+
+    .foto-upload-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--terracotta);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 12px 28px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      text-transform: uppercase;
+    }
+
+    .foto-upload-btn:hover {
+      background: #a8501f;
+      transform: translateY(-2px);
+    }
+
+    #fileInput { display: none; }
+
+    /* ── COOPERATIVA STRIP ── */
+    .coop-strip {
+      background: var(--blu-mare);
+      border-radius: 20px;
+      padding: 52px 60px;
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      margin-bottom: 100px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .coop-strip::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(232, 168, 56, 0.10);
+    }
+
+    .coop-strip-icon {
+      flex-shrink: 0;
+      width: 72px; height: 72px;
+      background: rgba(232, 168, 56, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .coop-strip-text {
+      flex: 1;
+      position: relative;
+      z-index: 2;
+    }
+
+    .coop-strip-text h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    .coop-strip-text p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.70);
+      line-height: 1.7;
+    }
+
+    .coop-strip-text p strong {
+      color: var(--oro-sole);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--grigio-scuro);
+      color: rgba(255,255,255,0.55);
+      text-align: center;
+      padding: 36px 48px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    footer strong {
+      color: white;
+    }
+
+    /* ── ANIMAZIONI SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .intro-section { grid-template-columns: 1fr; gap: 40px; }
+      .stat-sidebar { position: static; flex-direction: row; flex-wrap: wrap; }
+      .stat-card { flex: 1 1 140px; }
+      .sezioni-grid { grid-template-columns: 1fr; }
+      main { padding: 60px 24px 80px; }
+      .page-header-inner { padding: 60px 24px 52px; }
+      .coop-strip { flex-direction: column; gap: 24px; padding: 36px 28px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="biblioteca-salerno.html">
+      <div class="nav-logo-icon">B</div>
+      <div class="nav-logo-text">
+        <span>Biblioteca Comunale</span>
+        <span>Salerno</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="catalogo.html">Catalogo</a></li>
+      <li><a href="#">Servizi</a></li>
+      <li><a href="#">Eventi</a></li>
+      <li><a href="chi-siamo.html" class="active">Chi Siamo</a></li>
+      <li><a href="#">Contatti</a></li>
+      <li><a href="#" class="nav-cta">Accedi</a></li>
+    </ul>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <span class="page-header-eyebrow">La nostra storia</span>
+      <h1>Chi <em>Siamo</em></h1>
+      <p class="page-header-desc">Un luogo vivo, aperto alla città. La Biblioteca Comunale di Salerno è un presidio culturale al servizio della comunità.</p>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- INTRO + STATISTICHE -->
+    <section class="intro-section">
+      <div class="intro-text reveal">
+        <h2>Benvenuti alla Biblioteca Comunale di Salerno</h2>
+        <p>
+          La Biblioteca Comunale di Salerno, gestita dalla <strong>Cooperativa Sociale Saremo Alberi</strong>, si impegna a essere un punto di riferimento culturale per la comunità, offrendo accesso a risorse letterarie e promuovendo attività culturali che arricchiscono e uniscono i cittadini.
+        </p>
+        <p>
+          La biblioteca conta circa 10.000 volumi ereditati dalla biblioteca di Villa Carrara, suddivisi in 3 sezioni: Narrativa adulti, bambini e ragazzi, saggistica storia locale e riviste.
+        </p>
+      </div>
+
+      <aside class="stat-sidebar">
+        <div class="stat-card reveal reveal-delay-1">
+          <div class="stat-number">10.000</div>
+          <div class="stat-label">Volumi disponibili</div>
+        </div>
+        <div class="stat-card reveal reveal-delay-2">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Sezioni tematiche</div>
+        </div>
+        <div class="stat-card reveal reveal-delay-3">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Aperture settimanali</div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- LE SEZIONI -->
+    <section class="sezioni-section">
+      <span class="section-label reveal">Le nostre sezioni</span>
+      <h2 class="reveal">Il patrimonio librario</h2>
+      <div class="sezioni-grid">
+        <div class="sezione-card reveal reveal-delay-1">
+          <div class="sezione-icon">📖</div>
+          <h3>Narrativa</h3>
+          <p>Romanzi, racconti e letteratura per adulti. Un ricco catalogo di autori italiani e stranieri per ogni gusto e sensibilità.</p>
+        </div>
+        <div class="sezione-card reveal reveal-delay-2">
+          <div class="sezione-icon">🌟</div>
+          <h3>Bambini e Ragazzi</h3>
+          <p>Albi illustrati, romanzi di formazione e graphic novel per i più giovani. Un mondo di storie pensato per crescere leggendo.</p>
+        </div>
+        <div class="sezione-card reveal reveal-delay-3">
+          <div class="sezione-icon">📚</div>
+          <h3>Saggistica e Riviste</h3>
+          <p>Storia locale, saggistica e periodici. Una finestra sul territorio campano e sulla cultura del nostro tempo.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOTO DI GRUPPO -->
+    <section class="foto-section">
+      <span class="section-label reveal">Il nostro team</span>
+      <h2 class="reveal">Le persone della biblioteca</h2>
+
+      <div class="foto-wrapper reveal" id="fotoWrapper" onclick="document.getElementById('fileInput').click()">
+        <img class="foto-reale" id="fotoReale" src="" alt="Foto di gruppo del team della biblioteca" />
+        <div class="foto-placeholder">
+          <div class="foto-placeholder-icon">📷</div>
+          <h3>Foto di gruppo</h3>
+          <p>Clicca per caricare la foto del team della Biblioteca Comunale di Salerno</p>
+          <button class="foto-upload-btn" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
+            ⬆ Carica foto
+          </button>
+        </div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" />
+    </section>
+
+    <!-- COOPERATIVA -->
+    <div class="coop-strip reveal">
+      <div class="coop-strip-icon">🌳</div>
+      <div class="coop-strip-text">
+        <h3>Cooperativa Sociale Saremo Alberi</h3>
+        <p>La biblioteca è gestita dalla <strong>Cooperativa Sociale Saremo Alberi</strong>, realtà del terzo settore impegnata nella promozione culturale e nell'inclusione sociale sul territorio salernitano.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <strong>Biblioteca Comunale di Salerno</strong><br>
+    Gestita dalla Cooperativa Sociale Saremo Alberi<br><br>
+    Martedì 16.30–19.30 &nbsp;·&nbsp; Venerdì 16.30–19.30 &nbsp;·&nbsp; Sabato 10.00–13.00
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    reveals.forEach(el => observer.observe(el));
+
+    // Trigger immediato per elementi già visibili
+    setTimeout(() => {
+      reveals.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) {
+          el.classList.add('visible');
+          observer.unobserve(el);
+        }
+      });
+    }, 100);
+
+    // Upload foto di gruppo
+    const fileInput = document.getElementById('fileInput');
+    const fotoWrapper = document.getElementById('fotoWrapper');
+    const fotoReale = document.getElementById('fotoReale');
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        fotoReale.src = ev.target.result;
+        fotoWrapper.classList.add('has-photo');
+        fotoWrapper.style.cursor = 'default';
+        fotoWrapper.onclick = null;
+        fotoWrapper.style.border = '2px solid rgba(196,98,45,0.20)';
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+
+</body>
+</html>
