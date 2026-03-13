@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Area Admin — Biblioteca Comunale Salerno</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blu-mare: #1B3A5C;
+      --blu-cielo: #2E6DA4;
+      --terracotta: #C4622D;
+      --oro-sole: #E8A838;
+      --sabbia: #F5EDD8;
+      --bianco: #FDFAF4;
+      --grigio-scuro: #1A1A1A;
+      --grigio-medio: #6B6B6B;
+      --verde-patio: #3A6B4A;
+      --sidebar-w: 260px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: #f0f2f5; color: var(--grigio-scuro); display: flex; min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w); min-height: 100vh;
+      background: var(--blu-mare);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; z-index: 50;
+    }
+    .sidebar-logo {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .sidebar-logo-icon {
+      width: 40px; height: 40px; background: var(--terracotta); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif; font-weight: 900; font-size: 20px; color: white;
+      flex-shrink: 0;
+    }
+    .sidebar-logo-text { line-height: 1.2; }
+    .sidebar-logo-text span:first-child {
+      display: block; font-size: 12px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: white;
+    }
+    .sidebar-logo-text span:last-child {
+      font-size: 10px; color: rgba(255,255,255,.45); letter-spacing: .08em; text-transform: uppercase;
+    }
+    .sidebar-section-label {
+      padding: 20px 24px 8px;
+      font-size: 10px; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: rgba(255,255,255,.35);
+    }
+    .sidebar-nav { flex: 1; padding: 8px 12px; }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 14px; border-radius: 10px;
+      font-size: 13px; font-weight: 500; color: rgba(255,255,255,.6);
+      cursor: pointer; transition: all .2s; margin-bottom: 2px;
+      text-decoration: none;
+    }
+    .sidebar-item:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); }
+    .sidebar-item.active { background: rgba(255,255,255,.12); color: white; font-weight: 600; }
+    .sidebar-item .s-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-item .badge {
+      margin-left: auto; background: var(--terracotta);
+      color: white; font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 100px;
+    }
+    .sidebar-footer {
+      padding: 20px 24px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      font-size: 12px; color: rgba(255,255,255,.35);
+    }
+    .sidebar-footer strong { color: rgba(255,255,255,.55); display: block; margin-bottom: 2px; }
+
+    /* ── DEMO BANNER ── */
+    .demo-banner {
+      background: linear-gradient(90deg, var(--oro-sole) 0%, #d4962e 100%);
+      padding: 10px 24px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12px; font-weight: 600; color: var(--blu-mare);
+      letter-spacing: .02em;
+    }
+    .demo-banner .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--blu-mare); opacity: .5;
+      animation: blink 1.5s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+    /* ── MAIN AREA ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1; display: flex; flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      background: white; border-bottom: 1px solid #e8eaed;
+      padding: 0 36px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 40;
+    }
+    .topbar-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 700; color: var(--blu-mare);
+    }
+    .topbar-title span { font-style: italic; color: var(--terracotta); }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .topbar-time { font-size: 12px; color: var(--grigio-medio); }
+    .admin-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--sabbia); border-radius: 100px; padding: 6px 14px;
+      font-size: 12px; font-weight: 600; color: var(--blu-mare);
+    }
+    .admin-pill .av {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--terracotta);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: white;
+    }
+
+    /* PAGE CONTENT */
+    .page-content { padding: 36px; flex: 1; }
+
+    /* SECTION TABS */
+    .section-tabs {
+      display: flex; gap: 4px; margin-bottom: 32px;
+      background: white; border-radius: 12px; padding: 6px;
+      border: 1px solid #e8eaed; width: fit-content;
+    }
+    .tab-btn {
+      padding: 9px 22px; border-radius: 8px; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+      cursor: pointer; color: var(--grigio-medio); background: transparent;
+      transition: all .2s;
+    }
+    .tab-btn.active { background: var(--blu-mare); color: white; font-weight: 600; }
+    .tab-btn:hover:not(.active) { background: #f0f2f5; color: var(--grigio-scuro); }
+
+    /* TAB PANELS */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── SCANNER PANEL ── */
+    .scanner-layout {
+      display: grid; grid-template-columns: 1fr 1.1fr; gap: 28px; align-items: start;
+    }
+
+    .panel-card {
+      background: white; border-radius: 16px;
+      border: 1px solid #e8eaed;
+      overflow: hidden;
+    }
+    .panel-card-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #f0f2f5;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .panel-card-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px; font-weight: 700; color: var(--blu-mare);
+    }
+    .panel-card-header .icon { font-size: 20px; }
+    .panel-card-body { padding: 24px; }
+
+    /* Scanner viewer */
+    #reader {
+      border-radius: 10px; overflow: hidden;
+      background: #000; min-height: 220px;
+    }
+    #reader * { font-family: 'DM Sans', sans-serif !important; }
+
+    .scanner-status {
+      margin-top: 14px; padding: 10px 16px;
+      border-radius: 8px; font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .scanner-status.idle { background: #f0f2f5; color: var(--grigio-medio); }
+    .scanner-status.scanning { background: rgba(46,109,164,0.1); color: var(--blu-cielo); }
+    .scanner-status.success { background: rgba(58,107,74,0.1); color: var(--verde-patio); }
+    .scanner-status.loading { background: rgba(232,168,56,0.12); color: #8a6010; }
+    .scanner-status.error { background: rgba(196,98,45,0.1); color: var(--terracotta); }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .idle .status-dot { background: var(--grigio-medio); }
+    .scanning .status-dot { background: var(--blu-cielo); animation: blink 1s infinite; }
+    .success .status-dot { background: var(--verde-patio); }
+    .loading .status-dot { background: #8a6010; animation: blink .8s infinite; }
+    .error .status-dot { background: var(--terracotta); }
+
+    /* Form campi */
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block; font-size: 11px; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--blu-mare); margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid #e0e4ea; border-radius: 9px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px;
+      color: var(--grigio-scuro); background: var(--bianco);
+      outline: none; transition: border-color .2s, box-shadow .2s;
+    }
+    .form-group input:focus { border-color: var(--blu-cielo); box-shadow: 0 0 0 3px rgba(46,109,164,0.1); }
+    .form-group input.filled { background: rgba(58,107,74,0.04); border-color: rgba(58,107,74,0.35); }
+    .form-group input.isbn-field { font-family: monospace; font-size: 15px; letter-spacing: .06em; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .btn-primary {
+      width: 100%; padding: 14px;
+      background: var(--terracotta); color: white;
+      border: none; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 700; letter-spacing: .04em;
+      cursor: pointer; transition: background .2s, transform .2s, box-shadow .2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-primary:hover { background: #a8501f; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(196,98,45,0.3); }
+    .btn-primary:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-secondary {
+      width: 100%; padding: 11px;
+      background: transparent; color: var(--blu-mare);
+      border: 1.5px solid #d0d6e0; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all .2s; margin-top: 8px;
+    }
+    .btn-secondary:hover { border-color: var(--blu-mare); background: rgba(27,58,92,0.04); }
+
+    /* ── CATALOGO TABLE ── */
+    .table-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; gap: 16px;
+    }
+    .search-input-wrap { position: relative; flex: 1; max-width: 360px; }
+    .search-input-wrap input {
+      width: 100%; padding: 10px 14px 10px 38px;
+      border: 1.5px solid #e0e4ea; border-radius: 9px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px;
+      outline: none; background: white;
+      transition: border-color .2s;
+    }
+    .search-input-wrap input:focus { border-color: var(--blu-cielo); }
+    .search-input-wrap::before { content:'🔍'; position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:14px; }
+
+    .table-actions { display: flex; gap: 10px; }
+    .btn-export {
+      padding: 9px 18px; border-radius: 8px;
+      background: var(--blu-mare); color: white;
+      border: none; font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: background .2s;
+    }
+    .btn-export:hover { background: #142d48; }
+    .btn-export.csv { background: var(--verde-patio); }
+    .btn-export.csv:hover { background: #2d5438; }
+
+    .table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid #e8eaed; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    thead tr { background: var(--blu-mare); }
+    thead th {
+      padding: 13px 16px; text-align: left;
+      font-size: 11px; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: rgba(255,255,255,.75);
+      white-space: nowrap;
+    }
+    thead th:first-child { border-radius: 13px 0 0 0; }
+    thead th:last-child { border-radius: 0 13px 0 0; }
+    tbody tr { border-bottom: 1px solid #f0f2f5; transition: background .15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fafbfc; }
+    tbody td { padding: 12px 16px; font-size: 13px; color: var(--grigio-scuro); }
+    .td-isbn { font-family: monospace; font-size: 12px; color: var(--grigio-medio); }
+    .td-titolo { font-weight: 600; color: var(--blu-mare); max-width: 240px; }
+    .td-autore { color: var(--grigio-medio); }
+    .td-pagine { text-align: center; font-weight: 600; }
+    .td-num { font-size: 11px; color: var(--grigio-medio); }
+    .btn-delete {
+      background: rgba(196,98,45,0.1); color: var(--terracotta);
+      border: none; border-radius: 6px; padding: 5px 10px;
+      font-size: 12px; cursor: pointer; transition: background .2s;
+    }
+    .btn-delete:hover { background: var(--terracotta); color: white; }
+
+    .table-empty {
+      text-align: center; padding: 48px 24px; color: var(--grigio-medio);
+    }
+    .table-empty .emoji { font-size: 36px; margin-bottom: 10px; }
+
+    /* STATS ROW */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px;
+    }
+    .stat-card {
+      background: white; border-radius: 14px; border: 1px solid #e8eaed;
+      padding: 22px 24px;
+    }
+    .stat-card .s-label {
+      font-size: 11px; font-weight: 600; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--grigio-medio); margin-bottom: 10px;
+    }
+    .stat-card .s-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px; font-weight: 900; color: var(--blu-mare); line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-card .s-sub { font-size: 12px; color: var(--grigio-medio); }
+    .stat-card.accent .s-num { color: var(--terracotta); }
+    .stat-card.green .s-num { color: var(--verde-patio); }
+    .stat-card.gold .s-num { color: #8a6010; }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 32px; right: 32px; z-index: 999;
+      background: var(--grigio-scuro); color: white;
+      padding: 14px 22px; border-radius: 12px;
+      font-size: 14px; font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      display: flex; align-items: center; gap: 10px;
+      transform: translateY(80px); opacity: 0;
+      transition: all .35s cubic-bezier(.22,1,.36,1);
+      pointer-events: none;
+    }
+    .toast.show { transform: none; opacity: 1; }
+    .toast.success { background: var(--verde-patio); }
+    .toast.error { background: var(--terracotta); }
+
+    /* CONFIRM MODAL */
+    .confirm-overlay {
+      display:none; position:fixed; inset:0; z-index:200;
+      background:rgba(10,20,40,0.6); backdrop-filter:blur(4px);
+      align-items:center; justify-content:center;
+    }
+    .confirm-overlay.open { display:flex; }
+    .confirm-box {
+      background:white; border-radius:16px; padding:32px 36px;
+      max-width:400px; width:90%; text-align:center;
+      box-shadow:0 24px 60px rgba(0,0,0,0.2);
+      animation: popIn .25s cubic-bezier(.22,1,.36,1);
+    }
+    @keyframes popIn { from{opacity:0;transform:scale(.93)} to{opacity:1;transform:none} }
+    .confirm-box h4 { font-family:'Playfair Display',serif; font-size:20px; color:var(--blu-mare); margin-bottom:10px; }
+    .confirm-box p { font-size:14px; color:var(--grigio-medio); margin-bottom:24px; line-height:1.6; }
+    .confirm-actions { display:flex; gap:10px; }
+    .confirm-yes { flex:1; padding:12px; background:var(--terracotta); color:white; border:none; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; }
+    .confirm-no { flex:1; padding:12px; background:#f0f2f5; color:var(--grigio-scuro); border:none; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">B</div>
+      <div class="sidebar-logo-text">
+        <span>Biblioteca</span>
+        <span>Area Amministrativa</span>
+      </div>
+    </div>
+    <div class="demo-banner">
+      <div class="dot"></div>
+      Modalità Demo — nessun login richiesto
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principale</div>
+      <a class="sidebar-item active" onclick="showTab('scanner'); setActive(this)">
+        <span class="s-icon">📷</span> Scanner ISBN
+      </a>
+      <a class="sidebar-item" onclick="showTab('catalogo'); setActive(this)">
+        <span class="s-icon">📚</span> Gestione Catalogo
+        <span class="badge" id="badge-count">0</span>
+      </a>
+      <div class="sidebar-section-label" style="margin-top:12px">Sito</div>
+      <a class="sidebar-item" href="biblioteca-salerno.html" target="_blank">
+        <span class="s-icon">🏠</span> Homepage
+      </a>
+      <a class="sidebar-item" href="catalogo.html" target="_blank">
+        <span class="s-icon">🔍</span> Catalogo Pubblico
+      </a>
+      <a class="sidebar-item" href="eventi.html" target="_blank">
+        <span class="s-icon">📅</span> Eventi
+      </a>
+      <a class="sidebar-item" href="contatti.html" target="_blank">
+        <span class="s-icon">✉️</span> Contatti
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <strong>Admin Demo</strong>
+      Cooperativa Saremo Alberi
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-title">Area <span>Amministrativa</span></div>
+      <div class="topbar-right">
+        <div class="topbar-time" id="clock"></div>
+        <div class="admin-pill">
+          <div class="av">A</div>
+          Admin Demo
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="page-content">
+
+      <!-- TABS -->
+      <div class="section-tabs">
+        <button class="tab-btn active" onclick="showTab('scanner'); this.closest('.section-tabs').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">
+          📷 Scanner ISBN
+        </button>
+        <button class="tab-btn" onclick="showTab('catalogo'); this.closest('.section-tabs').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">
+          📚 Gestione Catalogo
+        </button>
+      </div>
+
+      <!-- ═══ TAB: SCANNER ═══ -->
+      <div class="tab-panel active" id="panel-scanner">
+        <div class="scanner-layout">
+
+          <!-- SCANNER CAMERA -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <span class="icon">📷</span>
+              <h3>Scanner Codice a Barre</h3>
+            </div>
+            <div class="panel-card-body">
+              <div id="reader"></div>
+              <div class="scanner-status scanning" id="scanner-status">
+                <div class="status-dot"></div>
+                <span id="status-text">Scanner attivo — inquadra il codice ISBN</span>
+              </div>
+              <button class="btn-secondary" style="margin-top:14px" onclick="resetScanner()">
+                🔄 Riavvia scanner
+              </button>
+            </div>
+          </div>
+
+          <!-- FORM DATI LIBRO -->
+          <div>
+            <div class="panel-card" style="margin-bottom:20px">
+              <div class="panel-card-header">
+                <span class="icon">📖</span>
+                <h3>Dati del Libro</h3>
+              </div>
+              <div class="panel-card-body">
+
+                <div class="form-group">
+                  <label>Codice ISBN</label>
+                  <input type="text" id="isbnInput" class="isbn-field" placeholder="Attendo la scansione…" readonly />
+                </div>
+
+                <div class="form-group">
+                  <label>Titolo</label>
+                  <input type="text" id="titoloInput" placeholder="Il titolo apparirà automaticamente" />
+                </div>
+
+                <div class="form-group">
+                  <label>Autore</label>
+                  <input type="text" id="autoreInput" placeholder="L'autore apparirà automaticamente" />
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Pagine</label>
+                    <input type="number" id="pagineInput" placeholder="Es. 320" min="1" />
+                  </div>
+                  <div class="form-group">
+                    <label>Codice Collocazione</label>
+                    <input type="text" id="collocazioneInput" placeholder="Es. NR 001" />
+                  </div>
+                </div>
+
+                <button class="btn-primary" id="btn-salva" onclick="salvaLibro()" disabled>
+                  💾 Salva nel Catalogo
+                </button>
+                <button class="btn-secondary" onclick="svuotaForm()">
+                  ✕ Svuota campi
+                </button>
+
+              </div>
+            </div>
+
+            <!-- ANTEPRIMA LIBRO -->
+            <div class="panel-card" id="anteprima-card" style="display:none">
+              <div class="panel-card-header">
+                <span class="icon">✅</span>
+                <h3>Ultimo libro aggiunto</h3>
+              </div>
+              <div class="panel-card-body">
+                <div id="anteprima-content" style="font-size:14px; line-height:1.9; color:#444;"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ TAB: CATALOGO ═══ -->
+      <div class="tab-panel" id="panel-catalogo">
+
+        <!-- STATS -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="s-label">Libri totali</div>
+            <div class="s-num" id="stat-totale">0</div>
+            <div class="s-sub">nel database</div>
+          </div>
+          <div class="stat-card accent">
+            <div class="s-label">Aggiunti oggi</div>
+            <div class="s-num" id="stat-oggi">0</div>
+            <div class="s-sub">in questa sessione</div>
+          </div>
+          <div class="stat-card green">
+            <div class="s-label">Con ISBN</div>
+            <div class="s-num" id="stat-isbn">0</div>
+            <div class="s-sub">catalogati</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="s-label">Senza pagine</div>
+            <div class="s-num" id="stat-nopagine">0</div>
+            <div class="s-sub">da completare</div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-card-header" style="justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="icon">📋</span>
+              <h3>Database Catalogo</h3>
+            </div>
+          </div>
+          <div class="panel-card-body">
+
+            <div class="table-toolbar">
+              <div class="search-input-wrap">
+                <input type="text" id="search-table" placeholder="Cerca titolo, autore, ISBN…" oninput="filtraTabella(this.value)" />
+              </div>
+              <div class="table-actions">
+                <button class="btn-export csv" onclick="esportaCSV()">⬇ Esporta CSV</button>
+                <button class="btn-export" onclick="svuotaDB()" style="background:#c0392b">🗑 Svuota DB</button>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table id="main-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Titolo</th>
+                    <th>Autore</th>
+                    <th>Pagine</th>
+                    <th>Codice ISBN</th>
+                    <th>Collocazione</th>
+                    <th>Azione</th>
+                  </tr>
+                </thead>
+                <tbody id="table-body">
+                  <tr>
+                    <td colspan="7">
+                      <div class="table-empty">
+                        <div class="emoji">📚</div>
+                        <p>Nessun libro ancora aggiunto.<br>Usa lo <strong>Scanner ISBN</strong> per iniziare!</p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <span id="toast-icon"></span>
+    <span id="toast-msg"></span>
+  </div>
+
+  <!-- CONFIRM MODAL -->
+  <div class="confirm-overlay" id="confirm-overlay">
+    <div class="confirm-box">
+      <h4 id="confirm-title">Conferma</h4>
+      <p id="confirm-msg">Sei sicuro?</p>
+      <div class="confirm-actions">
+        <button class="confirm-yes" id="confirm-yes">Conferma</button>
+        <button class="confirm-no" onclick="chiudiConfirm()">Annulla</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── DATABASE IN MEMORIA ──
+    let db = [];
+    let aggiuntiOggi = 0;
+    let scannerAttivo = true;
+    let confirmCallback = null;
+
+    // ── CLOCK ──
+    function aggiornaOrologio() {
+      const now = new Date();
+      document.getElementById('clock').textContent =
+        now.toLocaleDateString('it-IT', {weekday:'short', day:'2-digit', month:'short'}) +
+        ' — ' + now.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+    }
+    aggiornaOrologio();
+    setInterval(aggiornaOrologio, 30000);
+
+    // ── TABS ──
+    function showTab(name) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + name).classList.add('active');
+    }
+    function setActive(el) {
+      document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    // ── SCANNER ──
+    let html5QrcodeScanner;
+
+    function avviaScanner() {
+      html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader",
+        { fps: 10, qrbox: { width: 280, height: 120 }, supportedScanTypes: [0] },
+        false
+      );
+      html5QrcodeScanner.render(onScanSuccess, onScanError);
+      setStatus('scanning', 'Scanner attivo — inquadra il codice ISBN del libro');
+      scannerAttivo = true;
+    }
+
+    function onScanSuccess(decodedText) {
+      html5QrcodeScanner.clear().catch(()=>{});
+      scannerAttivo = false;
+      document.getElementById('isbnInput').value = decodedText;
+      setStatus('loading', 'ISBN rilevato: ' + decodedText + ' — cerco su Google Books…');
+      cercaLibro(decodedText);
+    }
+
+    function onScanError() {}
+
+    function resetScanner() {
+      svuotaForm();
+      if (html5QrcodeScanner) {
+        html5QrcodeScanner.clear().catch(()=>{}).finally(() => avviaScanner());
+      } else {
+        avviaScanner();
+      }
+    }
+
+    function setStatus(tipo, testo) {
+      const el = document.getElementById('scanner-status');
+      el.className = 'scanner-status ' + tipo;
+      document.getElementById('status-text').textContent = testo;
+    }
+
+    // ── GOOGLE BOOKS API ──
+    async function cercaLibro(isbn) {
+      try {
+        const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
+        const d = await r.json();
+        if (d.totalItems > 0) {
+          const info = d.items[0].volumeInfo;
+          const titolo = info.title || '';
+          const autore = info.authors ? info.authors.join(', ') : '';
+          const pagine = info.pageCount || '';
+
+          document.getElementById('titoloInput').value = titolo;
+          document.getElementById('autoreInput').value = autore;
+          document.getElementById('pagineInput').value = pagine;
+
+          ['titoloInput','autoreInput','pagineInput'].forEach(id => {
+            if(document.getElementById(id).value) document.getElementById(id).classList.add('filled');
+          });
+
+          setStatus('success', `✅ Trovato: "${titolo}" — Completa i campi mancanti e salva`);
+          document.getElementById('btn-salva').disabled = false;
+          mostraToast('success', '📖 Libro trovato su Google Books!');
+        } else {
+          setStatus('error', 'Libro non trovato su Google Books — compila i campi manualmente');
+          document.getElementById('btn-salva').disabled = false;
+          mostraToast('error', 'ISBN non trovato — inserisci i dati manualmente');
+        }
+      } catch(e) {
+        setStatus('error', 'Errore di connessione — compila i campi manualmente');
+        document.getElementById('btn-salva').disabled = false;
+      }
+    }
+
+    // ── SALVA LIBRO ──
+    function salvaLibro() {
+      const isbn = document.getElementById('isbnInput').value.trim();
+      const titolo = document.getElementById('titoloInput').value.trim();
+      const autore = document.getElementById('autoreInput').value.trim();
+      const pagine = document.getElementById('pagineInput').value.trim();
+      const collocazione = document.getElementById('collocazioneInput').value.trim();
+
+      if (!titolo) { mostraToast('error', '⚠️ Inserisci almeno il titolo'); return; }
+
+      const libro = {
+        id: Date.now(),
+        isbn: isbn || '—',
+        titolo,
+        autore: autore || 'Autore sconosciuto',
+        pagine: pagine || '—',
+        collocazione: collocazione || '—',
+      };
+
+      db.push(libro);
+      aggiuntiOggi++;
+      aggiornaStats();
+      aggiornaTabella();
+
+      // Anteprima
+      document.getElementById('anteprima-content').innerHTML = `
+        <strong style="color:var(--blu-mare);font-size:16px">${libro.titolo}</strong><br>
+        <span style="color:var(--grigio-medio)">di ${libro.autore}</span><br>
+        <span>📄 ${libro.pagine} pagine &nbsp;·&nbsp; ISBN: ${libro.isbn} &nbsp;·&nbsp; Codice: ${libro.collocazione}</span>
+      `;
+      document.getElementById('anteprima-card').style.display = 'block';
+
+      mostraToast('success', `✅ "${libro.titolo}" salvato nel catalogo!`);
+      svuotaForm();
+      avviaScanner();
+    }
+
+    function svuotaForm() {
+      ['isbnInput','titoloInput','autoreInput','pagineInput','collocazioneInput'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = '';
+        el.classList.remove('filled');
+      });
+      document.getElementById('btn-salva').disabled = true;
+      setStatus('scanning', 'Scanner attivo — inquadra il codice ISBN del libro');
+    }
+
+    // ── TABELLA ──
+    function aggiornaTabella(filtro) {
+      const tbody = document.getElementById('table-body');
+      const lista = filtro
+        ? db.filter(l =>
+            l.titolo.toLowerCase().includes(filtro) ||
+            l.autore.toLowerCase().includes(filtro) ||
+            l.isbn.toLowerCase().includes(filtro)
+          )
+        : db;
+
+      if (lista.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7"><div class="table-empty"><div class="emoji">📚</div><p>${db.length === 0 ? 'Nessun libro ancora aggiunto.<br>Usa lo <strong>Scanner ISBN</strong> per iniziare!' : 'Nessun risultato trovato.'}</p></div></td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = lista.map((l, i) => `
+        <tr>
+          <td class="td-num">${i + 1}</td>
+          <td class="td-titolo">${l.titolo}</td>
+          <td class="td-autore">${l.autore}</td>
+          <td class="td-pagine">${l.pagine}</td>
+          <td class="td-isbn">${l.isbn}</td>
+          <td class="td-isbn">${l.collocazione}</td>
+          <td><button class="btn-delete" onclick="eliminaLibro(${l.id})">✕ Elimina</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function filtraTabella(val) {
+      aggiornaTabella(val.toLowerCase().trim() || null);
+    }
+
+    function eliminaLibro(id) {
+      apriConfirm(
+        'Elimina libro',
+        'Vuoi eliminare questo libro dal database? L\'operazione non è reversibile.',
+        () => {
+          db = db.filter(l => l.id !== id);
+          aggiornaStats();
+          aggiornaTabella();
+          mostraToast('success', '🗑 Libro eliminato');
+        }
+      );
+    }
+
+    function svuotaDB() {
+      if (db.length === 0) { mostraToast('error', 'Il database è già vuoto'); return; }
+      apriConfirm(
+        'Svuota database',
+        `Stai per eliminare tutti i ${db.length} libri dal database. Sicuro di voler continuare?`,
+        () => {
+          db = [];
+          aggiuntiOggi = 0;
+          aggiornaStats();
+          aggiornaTabella();
+          mostraToast('success', '🗑 Database svuotato');
+        }
+      );
+    }
+
+    // ── STATS ──
+    function aggiornaStats() {
+      document.getElementById('stat-totale').textContent = db.length;
+      document.getElementById('stat-oggi').textContent = aggiuntiOggi;
+      document.getElementById('stat-isbn').textContent = db.filter(l => l.isbn !== '—').length;
+      document.getElementById('stat-nopagine').textContent = db.filter(l => l.pagine === '—').length;
+      document.getElementById('badge-count').textContent = db.length;
+    }
+
+    // ── EXPORT CSV ──
+    function esportaCSV() {
+      if (db.length === 0) { mostraToast('error', 'Nessun libro da esportare'); return; }
+      const header = ['Titolo','Autore','Pagine','Codice ISBN','Collocazione'];
+      const righe = db.map(l => [
+        `"${l.titolo.replace(/"/g,'""')}"`,
+        `"${l.autore.replace(/"/g,'""')}"`,
+        l.pagine,
+        l.isbn,
+        l.collocazione
+      ].join(','));
+      const csv = [header.join(','), ...righe].join('\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'catalogo-biblioteca-salerno.csv';
+      a.click(); URL.revokeObjectURL(url);
+      mostraToast('success', '✅ CSV esportato con successo!');
+    }
+
+    // ── TOAST ──
+    function mostraToast(tipo, msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      t.className = 'toast ' + tipo + ' show';
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), 3200);
+    }
+
+    // ── CONFIRM ──
+    function apriConfirm(titolo, msg, cb) {
+      document.getElementById('confirm-title').textContent = titolo;
+      document.getElementById('confirm-msg').textContent = msg;
+      confirmCallback = cb;
+      document.getElementById('confirm-overlay').classList.add('open');
+    }
+    function chiudiConfirm() {
+      document.getElementById('confirm-overlay').classList.remove('open');
+      confirmCallback = null;
+    }
+    document.getElementById('confirm-yes').onclick = () => {
+      if (confirmCallback) confirmCallback();
+      chiudiConfirm();
+    };
+    document.addEventListener('keydown', e => { if(e.key==='Escape') chiudiConfirm(); });
+
+    // ── INIT ──
+    aggiornaStats();
+    avviaScanner();
+  </script>
+
+</body>
+</html>
