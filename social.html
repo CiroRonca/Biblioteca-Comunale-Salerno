@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social & Galleria — Biblioteca Comunale Salerno</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blu-mare: #1B3A5C;
+      --blu-cielo: #2E6DA4;
+      --terracotta: #C4622D;
+      --oro-sole: #E8A838;
+      --sabbia: #F5EDD8;
+      --bianco: #FDFAF4;
+      --grigio-scuro: #1A1A1A;
+      --grigio-medio: #6B6B6B;
+      --verde-patio: #3A6B4A;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bianco); color: var(--grigio-scuro); overflow-x: hidden; }
+
+    /* ── NAV ── */
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 72px;
+      background: rgba(253, 250, 244, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(196, 98, 45, 0.15);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      height: 48px; /* Un po' più alto di prima, si incastra perfetto nella barra */
+      width: auto; /* Lasciamo che la larghezza si adatti alla tua foto */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-logo-icon img {
+      height: 100%;
+      width: auto; /* Mantiene le proporzioni originali del tuo logo */
+      object-fit: contain; 
+      border-radius: 4px; /* Opzionale: smussa leggermente gli angoli della foto */
+    }
+    
+    .nav-logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .nav-logo-text span:first-child {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--blu-mare);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .nav-logo-text span:last-child {
+      font-size: 11px;
+      color: var(--grigio-medio);
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--grigio-scuro);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      position: relative;
+      padding-bottom: 2px;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--terracotta);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      background: var(--terracotta);
+      color: white !important;
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-weight: 600 !important;
+    }
+
+    /* Bottone Accedi */
+    .nav-links .nav-cta {
+      background: var(--terracotta);
+      color: white;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      transition: background 0.3s ease;
+    }
+
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: #a8501f !important; }
+    
+    /* ── REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding-top: 72px;
+      background: linear-gradient(135deg, var(--blu-mare) 0%, #223f65 100%);
+      position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content:''; position:absolute; top:-80px; right:-80px;
+      width:400px; height:400px; border-radius:50%;
+      background: radial-gradient(circle, rgba(232,168,56,0.1) 0%, transparent 70%);
+    }
+    .page-header-inner {
+      max-width: 900px; margin: 0 auto; padding: 72px 48px 64px; text-align: center;
+      position: relative; z-index: 2;
+    }
+    .page-header-eyebrow {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      letter-spacing: .2em; text-transform: uppercase; color: var(--oro-sole); margin-bottom: 20px;
+    }
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(38px,6vw,60px); font-weight: 900; color: white; line-height: 1.08; margin-bottom: 20px;
+    }
+    .page-header h1 em { font-style: italic; color: var(--oro-sole); }
+    .page-header-desc { font-size: 16px; color: rgba(255,255,255,.65); line-height: 1.7; font-weight: 300; max-width: 540px; margin: 0 auto; }
+
+    /* ── SOCIAL CARDS ── */
+    .social-section {
+      background: var(--sabbia);
+      padding: 80px 0 72px;
+    }
+    .social-inner {
+      max-width: 1100px; margin: 0 auto; padding: 0 48px;
+    }
+    .section-label {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 11px; font-weight: 600; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--terracotta); margin-bottom: 14px;
+    }
+    .section-label::before { content:''; width:24px; height:1.5px; background:var(--terracotta); }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px; font-weight: 700; color: var(--blu-mare);
+      margin-bottom: 48px; line-height: 1.2;
+    }
+
+    .social-cards {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    }
+
+    .social-card {
+      border-radius: 20px; overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: transform .35s ease, box-shadow .35s ease;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .social-card:hover { transform: translateY(-8px); box-shadow: 0 24px 60px rgba(27,58,92,0.15); }
+
+    /* Instagram card */
+    .social-card.instagram {
+      background: linear-gradient(145deg, #405DE6 0%, #5B51D8 15%, #833AB4 35%, #C13584 55%, #E1306C 75%, #FD1D1D 90%, #F77737 100%);
+    }
+    /* Facebook card */
+    .social-card.facebook {
+      background: linear-gradient(145deg, #0866FF 0%, #0a4dbf 100%);
+    }
+
+    .social-card-inner {
+      padding: 44px 40px;
+      display: flex; flex-direction: column; gap: 24px;
+      flex: 1;
+    }
+    .social-card-top {
+      display: flex; align-items: center; gap: 18px;
+    }
+    .social-icon {
+      width: 56px; height: 56px; border-radius: 14px;
+      background: rgba(255,255,255,.2);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .social-icon svg { width: 28px; height: 28px; fill: white; }
+    .social-card-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px; font-weight: 900; color: white; line-height: 1;
+    }
+    .social-card-handle {
+      font-size: 14px; color: rgba(255,255,255,.7); font-weight: 400;
+    }
+    .social-card-desc {
+      font-size: 15px; color: rgba(255,255,255,.8); line-height: 1.7; font-weight: 300;
+    }
+    .social-card-stats {
+      display: flex; gap: 32px;
+    }
+    .stat-item { display: flex; flex-direction: column; gap: 2px; }
+    .stat-num { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; color: white; }
+    .stat-lbl { font-size: 11px; color: rgba(255,255,255,.6); letter-spacing: .1em; text-transform: uppercase; }
+    .social-card-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.2); color: white;
+      border: 1.5px solid rgba(255,255,255,.4);
+      border-radius: 10px; padding: 13px 24px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+      text-decoration: none; width: fit-content;
+      transition: background .2s, border-color .2s;
+    }
+    .social-card-btn:hover { background: rgba(255,255,255,.3); border-color: rgba(255,255,255,.7); }
+    .social-card-btn svg { width: 16px; height: 16px; fill: white; }
+
+    /* ── GALLERIA ── */
+    .galleria-section {
+      max-width: 1160px; margin: 0 auto;
+      padding: 90px 48px 100px;
+    }
+    .galleria-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 48px; gap: 24px; flex-wrap: wrap;
+    }
+    .galleria-header-left {}
+    .galleria-filter {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 8px 18px; border-radius: 100px;
+      border: 1.5px solid rgba(27,58,92,0.18);
+      background: transparent; font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 500; color: var(--grigio-medio);
+      cursor: pointer; transition: all .2s ease; white-space: nowrap;
+    }
+    .filter-btn:hover { border-color: var(--blu-cielo); color: var(--blu-cielo); }
+    .filter-btn.active { background: var(--blu-mare); border-color: var(--blu-mare); color: white; font-weight: 600; }
+
+    /* Masonry grid */
+    .masonry {
+      columns: 4;
+      column-gap: 16px;
+    }
+    .masonry-item {
+      break-inside: avoid;
+      margin-bottom: 16px;
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      background: var(--grigio-chiaro);
+    }
+    .masonry-item img {
+      width: 100%; display: block;
+      transition: transform .45s ease;
+    }
+    .masonry-item:hover img { transform: scale(1.06); }
+    .masonry-item-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(27,58,92,0.85) 0%, transparent 55%);
+      opacity: 0; transition: opacity .3s ease;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 20px;
+    }
+    .masonry-item:hover .masonry-item-overlay { opacity: 1; }
+    .masonry-item-caption {
+      font-size: 13px; font-weight: 500; color: white; line-height: 1.4;
+    }
+    .masonry-item-tag {
+      font-size: 10px; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--oro-sole);
+      margin-bottom: 4px; display: block;
+    }
+    .masonry-item-likes {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(0,0,0,.45); color: white;
+      font-size: 11px; font-weight: 600;
+      padding: 5px 10px; border-radius: 100px;
+      display: flex; align-items: center; gap: 5px;
+      opacity: 0; transition: opacity .3s ease;
+      backdrop-filter: blur(4px);
+    }
+    .masonry-item:hover .masonry-item-likes { opacity: 1; }
+    .masonry-item.hidden { display: none; }
+
+    /* Placeholder immagini colorate */
+    .photo-placeholder {
+      width: 100%; display: block;
+      object-fit: cover;
+    }
+
+    /* ── LIGHTBOX ── */
+    .lightbox-overlay {
+      display: none; position: fixed; inset: 0; z-index: 300;
+      background: rgba(10,18,32,0.92); backdrop-filter: blur(8px);
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    .lightbox-overlay.open { display: flex; }
+    .lightbox-inner {
+      max-width: 860px; width: 100%; position: relative;
+      animation: lbIn .3s cubic-bezier(.22,1,.36,1);
+    }
+    @keyframes lbIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:none} }
+    .lightbox-img {
+      width: 100%; border-radius: 16px; display: block;
+      max-height: 80vh; object-fit: cover;
+    }
+    .lightbox-close {
+      position: absolute; top: -44px; right: 0;
+      background: rgba(255,255,255,.12); border: none; color: white;
+      width: 36px; height: 36px; border-radius: 50%; font-size: 18px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,.25); }
+    .lightbox-caption {
+      padding: 20px 0 0;
+      color: rgba(255,255,255,.8); font-size: 15px; line-height: 1.6;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .lightbox-nav {
+      display: flex; gap: 10px;
+    }
+    .lb-nav-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,.12); border: none; color: white;
+      font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .lb-nav-btn:hover { background: rgba(255,255,255,.25); }
+
+    /* ── FOLLOW CTA ── */
+    .follow-strip {
+      background: var(--blu-mare);
+      padding: 72px 0;
+    }
+    .follow-inner {
+      max-width: 800px; margin: 0 auto; padding: 0 48px; text-align: center;
+    }
+    .follow-inner h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px; font-weight: 700; color: white; margin-bottom: 14px;
+      line-height: 1.2;
+    }
+    .follow-inner h3 em { font-style: italic; color: var(--oro-sole); }
+    .follow-inner p {
+      font-size: 16px; color: rgba(255,255,255,.65); margin-bottom: 36px;
+      line-height: 1.7; font-weight: 300;
+    }
+    .follow-btns {
+      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+    }
+    .follow-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 28px; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
+      text-decoration: none; transition: transform .2s, opacity .2s;
+    }
+    .follow-btn:hover { transform: translateY(-3px); opacity: .9; }
+    .follow-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .follow-btn.ig {
+      background: linear-gradient(135deg, #833AB4, #E1306C, #F77737);
+      color: white;
+    }
+    .follow-btn.fb { background: #0866FF; color: white; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--grigio-scuro); color: rgba(255,255,255,0.55);
+      text-align: center; padding: 40px 48px; font-size: 13px; line-height: 2;
+    }
+    footer strong { color: rgba(255,255,255,0.85); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .nav-links {
+        display: none; flex-direction: column; gap: 0;
+        position: fixed; top: 72px; left: 0; right: 0;
+        background: rgba(253,250,244,0.98); backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(196,98,45,0.15);
+        padding: 16px 20px 24px; z-index: 99;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { width: 100%; }
+      .nav-links a { display: block; padding: 12px 0; font-size: 15px; border-bottom: 1px solid rgba(27,58,92,0.06); }
+      .nav-links li:last-child a { border-bottom: none; margin-top: 8px; text-align: center; }
+      .nav-hamburger { display: flex; }
+
+      .page-header-inner { padding: 56px 20px 52px; }
+      .social-inner { padding: 0 20px; }
+      .social-cards { grid-template-columns: 1fr; }
+      .galleria-section { padding: 60px 20px 80px; }
+      .galleria-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .masonry { columns: 2; }
+      .follow-inner { padding: 0 20px; }
+      footer { padding: 32px 20px; }
+    }
+    @media (max-width: 480px) {
+      .masonry { columns: 2; }
+      .social-card-inner { padding: 28px 24px; }
+      .follow-btns { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-icon"><img src="Logo.png" alt="Logo Biblioteca"></div>
+      <div class="nav-logo-text">
+        <span>Biblioteca Comunale</span>
+        <span>Salerno</span>
+      </div>
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="catalogo.html">Catalogo</a></li>
+      <li><a href="servizi.html">Servizi</a></li>
+      <li><a href="eventi.html">Eventi</a></li>
+      <li><a href="chisiamo.html">Chi Siamo</a></li>
+      <li><a href="contatti.html">Contatti</a></li>
+      <li><a href="social.html" class="active">Social & Galleria</a></li>
+      <li><a href="#" class="nav-cta">Accedi</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <span class="page-header-eyebrow">Seguici online</span>
+      <h1>La biblioteca sui <em>social</em></h1>
+      <p class="page-header-desc">
+        Resta aggiornato su eventi, novità e momenti della vita culturale della nostra biblioteca. Seguici su Instagram e Facebook.
+      </p>
+    </div>
+  </header>
+
+  <!-- SOCIAL CARDS -->
+  <section class="social-section">
+    <div class="social-inner">
+      <span class="section-label reveal">I nostri canali</span>
+      <h2 class="section-title reveal">Dove trovarci</h2>
+
+      <div class="social-cards">
+
+        <!-- INSTAGRAM -->
+        <a class="social-card instagram reveal" href="https://www.instagram.com" target="_blank" rel="noopener">
+          <div class="social-card-inner">
+            <div class="social-card-top">
+              <div class="social-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="social-card-name">Instagram</div>
+                <div class="social-card-handle">@biblioteca.salerno</div>
+              </div>
+            </div>
+            <p class="social-card-desc">
+              Foto degli eventi, scorci della biblioteca, libri del mese e momenti culturali. Una finestra sul cuore della nostra comunità.
+            </p>
+            <div class="social-card-stats">
+              <div class="stat-item">
+                <div class="stat-num">420</div>
+                <div class="stat-lbl">Follower</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-num">180+</div>
+                <div class="stat-lbl">Post</div>
+              </div>
+            </div>
+            <span class="social-card-btn">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+              Seguici su Instagram →
+            </span>
+          </div>
+        </a>
+
+        <!-- FACEBOOK -->
+        <a class="social-card facebook reveal reveal-delay-1" href="https://www.facebook.com" target="_blank" rel="noopener">
+          <div class="social-card-inner">
+            <div class="social-card-top">
+              <div class="social-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="social-card-name">Facebook</div>
+                <div class="social-card-handle">Biblioteca Comunale Salerno</div>
+              </div>
+            </div>
+            <p class="social-card-desc">
+              Annunci di eventi, aggiornamenti sulle aperture e contenuti culturali. La nostra pagina Facebook è il punto di riferimento per tutta la comunità.
+            </p>
+            <div class="social-card-stats">
+              <div class="stat-item">
+                <div class="stat-num">850</div>
+                <div class="stat-lbl">Mi piace</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-num">920</div>
+                <div class="stat-lbl">Follower</div>
+              </div>
+            </div>
+            <span class="social-card-btn">
+              <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              Seguici su Facebook →
+            </span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERIA FOTO -->
+  <section class="galleria-section">
+
+    <div class="galleria-header">
+      <div class="galleria-header-left">
+        <span class="section-label reveal">Le nostre foto</span>
+        <h2 class="section-title reveal" style="margin-bottom:0">Galleria fotografica</h2>
+      </div>
+      <div class="galleria-filter reveal">
+        <button class="filter-btn active" data-cat="tutti" onclick="filtraFoto('tutti',this)">Tutte</button>
+        <button class="filter-btn" data-cat="eventi" onclick="filtraFoto('eventi',this)">Eventi</button>
+        <button class="filter-btn" data-cat="biblioteca" onclick="filtraFoto('biblioteca',this)">Biblioteca</button>
+        <button class="filter-btn" data-cat="bambini" onclick="filtraFoto('bambini',this)">Bambini</button>
+        <button class="filter-btn" data-cat="libri" onclick="filtraFoto('libri',this)">Libri</button>
+      </div>
+    </div>
+
+    <div class="masonry" id="masonry-grid">
+
+      <!-- Le foto sono SVG placeholder con colori del design system -->
+
+      <div class="masonry-item reveal" data-cat="eventi" onclick="apriLightbox(0)">
+        <svg class="photo-placeholder" viewBox="0 0 400 540" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="540" fill="#1B3A5C"/>
+          <rect x="40" y="80" width="320" height="3" rx="2" fill="rgba(255,255,255,0.15)"/>
+          <circle cx="200" cy="200" r="80" fill="rgba(232,168,56,0.2)"/>
+          <rect x="80" y="300" width="240" height="20" rx="4" fill="rgba(255,255,255,0.2)"/>
+          <rect x="120" y="340" width="160" height="12" rx="3" fill="rgba(255,255,255,0.12)"/>
+          <text x="200" y="210" font-family="Georgia" font-size="64" text-anchor="middle" fill="rgba(232,168,56,0.4)">📚</text>
+          <rect x="40" y="430" width="100" height="6" rx="3" fill="rgba(196,98,45,0.6)"/>
+        </svg>
+        <div class="masonry-item-overlay">
+          <span class="masonry-item-tag">Evento</span>
+          <span class="masonry-item-caption">Presentazione "Voci del Sud" — Sala eventi</span>
+        </div>
+        <div class="masonry-item-likes">❤ 42</div>
+      </div>
+
+      <div class="masonry-item reveal reveal-delay-1" data-cat="biblioteca" onclick="apriLightbox(1)">
+        <svg class="photo-placeholder" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#2E6DA4"/>
+          <rect x="30" y="80" width="30" height="140" rx="4" fill="rgba(245,237,216,0.5)"/>
+          <rect x="70" y="60" width="24" height="160" rx="4" fill="rgba(196,98,45,0.7)"/>
+          <rect x="104" y="90" width="28" height="130" rx="4" fill="rgba(232,168,56,0.6)"/>
+          <rect x="142" y="70" width="20" height="150" rx="4" fill="rgba(245,237,216,0.4)"/>
+          <rect x="172" y="100" width="26" height="120" rx="4" fill="rgba(196,98,45,0.5)"/>
+          <rect x="208" y="50" width="32" height="170" rx="4" fill="rgba(232,168,56,0.4)"/>
+          <rect x="250" y="80" width="22" height="140" rx="4" fill="rgba(245,237,216,0.6)"/>
+          <rect x="282" y="65" width="28" height="155" rx="4" fill="rgba(196,98,45,0.6)"/>
+          <rect x="320" y="90" width="24" height="130" rx="4" fill="rgba(232,168,56,0.5)"/>
+          <rect x="354" y="75" width="20" height="145" rx="4" fill="rgba(245,237,216,0.3)"/>
+        </svg>
+        <div class="masonry-item-overlay">
+          <span class="masonry-item-tag">Biblioteca</span>
+          <span class="masonry-item-caption">La nostra scaffalatura — sezione narrativa</span>
+        </div>
+        <div class="masonry-item-likes">❤ 67</div>
+      </div>
+
+      <div class="masonry-item reveal reveal-delay-2" data-cat="bambini" onclick="apriLightbox(2)">
+        <svg class="photo-placeholder" viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="480" fill="#3A6B4A"/>
+          <circle cx="140" cy="160" r="45" fill="rgba(245,237,216,0.3)"/>
+          <circle cx="260" cy="180" r="38" fill="rgba(232,168,56,0.3)"/>
+          <circle cx="200" cy="200" r="35" fill="rgba(245,237,216,0.25)"/>
+          <text x="200" y="230" font-family="Georgia" font-size="72" text-anchor="middle" fill="rgba(245,237,216,0.3)">🌟</text>
+          <rect x="60" y="310" width="280" height="16" rx="4" fill="rgba(255,255,255,0.15)"/>
+          <rect x="100" y="345" width="200" height="10" rx="3" fill="rgba(255,255,255,0.1)"/>
+        </svg>
+        <div class="masonry-item-overlay">
+          <span class="masonry-item-tag">Bambini</span>
+          <span class="masonry-item-caption">Letture animate — piccoli lettori in cerchio</span>
+        </div>
+        <div class="masonry-item-likes">❤ 93</div>
+      </div>
+
+      <div class="masonry-item reveal" data-cat="libri" onclick="apriLightbox(3)">
+        <svg class="photo-placeholder" viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="350" fill="#6B4C3B"/>
+          <rect x="80" y="80" width="240" height="180" rx="8" fill="rgba(245,237,216,0.15)"/>
+          <rect x="95" y="95" width="210" height="4" rx="2" fill="rgba(232,168,56,0.5)"/>
+          <rect x="95" y="110" width="160" height="3" rx="2" fill="rgba(255,255,255,0.2)"/>
+          <rect x="95" y="125" width="180" height="3" rx="2" fill="rgba(255,255,255,0.15)"/>
+          <rect x="95" y="140" width="140" height="3" rx="2" fill="rgba(255,255,255,0.2)"/>
+          <text x="200" y="220" font-family="Georgia" font-size="56" text-anchor="middle" fill="rgba(232,168,56,0.35)">📖</text>
+        </svg>
+        <div class="masonry-item-overlay">
+          <span class="masonry-item-tag">Libri</span>
+          <span class="masonry-item-caption">Il libro del mese — selezione estiva</span>
+        </div>
+        <div class="masonry-item-likes">❤ 38</div>
+      </div>
+
+      <div class="masonry-item reveal reveal-delay-1" data-cat="eventi" onclick="apriLightbox(4)">
+        <svg class="photo-placeholder" viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="520" fill="#C4622D"/>
+          <polygon points="200,60 360,420 40,420" fill="rgba(255,255,255,0.08)"/>
+          <circle cx="200" cy="280" r="100" fill="rgba(27,58,92,0.3)"/>
+          <text x="200" y="310" font-family="Georgia" font-size="80" text-anchor="middle" fill="rgba(255,255,255,0.25)">🎤</text>
+          <rect x="60" y="450" width="280" height="14" rx="3" fill="rgba(255,255,255,0.2)"/>
+        </svg>
+        <div class="masonry-item-overlay">
+          <span class="masonry-item-tag">Evento</span>
+          <span class="masonry-item-caption">Incontro con l'autore — sala piena</span>
+        </div>
+        <div class="masonry-item-likes">❤ 55</div>
+      </div>
+
+      <div class="masonry-item reveal reveal-delay-2" data-cat="biblioteca" onclick="apriLightbox(5)">
+        <svg class="photo-placeholder" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#1B3A5C"/>
+          <rect x="0" y="200" width="400" height="4" fill="rgba(232,168,56,0.4)"/>
+          <rect x="40" y="60" width="60" height="140" rx="6" fill="rgba(255,255,255,0.08)"/>
+          <rect x="40" y="60" width="2" height="140" fill="rgba(232,168,56,0.3)"/>
+          <rect x="120" y="80" width="60" height="120" rx="6" fill="rgba(255,255,255,0.06)"/>
+          <rect x="200" y="50" width="60" height="150" rx="6" fill="rgba(255,255,255,0.08)"/>
+          <rect x="280" y="70" width="60" height="130" rx="6" fill="rgba(255,255,255,0.06)"/>
+          <text x="200" y="170" font-family="Georgia" font-size="40" text-anchor="middle" fill="rgba(232,168,56,0.2)">🏛️</text>
+        </svg>
+        <div class="masonry-item-overlay">
+          <span class="masonry-item-tag">Biblioteca</span>
+          <span class="masonry-item-caption">La sala lettura al mattino — luce naturale</span>
+        </div>
+        <div class="masonry-item-likes">❤ 71</div>
+      </div>
+
+      <div class="masonry-item reveal" data-cat="bambini" onclick="apriLightbox(6)">
+        <svg class="photo-placeholder" viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="460" fill="#E8A838"/>
+          <circle cx="120" cy="140" r="60" fill="rgba(27,58,92,0.2)"/>
+          <circle cx="280" cy="160" r="50" fill="rgba(27,58,92,0.15)"/>
+          <circle cx="200" cy="180" r="40" fill="rgba(27,58,92,0.2)"/>
+          <text x="200" y="290" font-family="Georgia" font-size="64" text-anchor="middle" fill="rgba(27,58,92,0.3)">🎨</text>
+          <rect x="80" y="370" width="240" height="12" rx="3" fill="rgba(27,58,92,0.2)"/>
+          <rect x="120" y="395" width="160" height="8" rx="2" fill="rgba(27,58,92,0.15)"/>
+        </svg>
+        <div class="masonry-item-overlay">
+          <span class="masonry-item-tag">Bambini</span>
+          <span class="masonry-item-caption">Laboratorio origami — mani creative</span>
+        </div>
+        <div class="masonry-item-likes">❤ 88</div>
+      </div>
+
+      <div class="masonry-item reveal reveal-delay-1" data-cat="libri" onclick="apriLightbox(7)">
+        <svg class="photo-placeholder" viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="320" fill="#2E4057"/>
+          <rect x="60" y="100" width="280" height="120" rx="10" fill="rgba(255,255,255,0.06)"/>
+          <rect x="80" y="115" width="80" height="90" rx="6" fill="rgba(196,98,45,0.6)"/>
+          <rect x="175" y="125" width="60" height="80" rx="6" fill="rgba(232,168,56,0.5)"/>
+          <rect x="250" y="110" width="70" height="95" rx="6" fill="rgba(245,237,216,0.4)"/>
+          <rect x="80" y="240" width="240" height="8" rx="2" fill="rgba(255,255,255,0.12)"/>
+        </svg>
+        <div class="masonry-item-overlay">
+          <span class="masonry-item-tag">Libri</span>
+          <span class="masonry-item-caption">Nuovi arrivi — questa settimana in biblioteca</span>
+        </div>
+        <div class="masonry-item-likes">❤ 44</div>
+      </div>
+
+      <div class="masonry-item reveal reveal-delay-2" data-cat="eventi" onclick="apriLightbox(8)">
+        <svg class="photo-placeholder" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="500" fill="#5C4033"/>
+          <rect x="0" y="0" width="400" height="500" fill="url(#grad1)"/>
+          <defs><linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#5C4033"/><stop offset="100%" style="stop-color:#3A6B4A"/></linearGradient></defs>
+          <circle cx="200" cy="200" r="120" fill="rgba(255,255,255,0.05)"/>
+          <text x="200" y="230" font-family="Georgia" font-size="80" text-anchor="middle" fill="rgba(255,255,255,0.2)">🖼️</text>
+          <rect x="60" y="380" width="280" height="14" rx="3" fill="rgba(255,255,255,0.15)"/>
+          <rect x="100" y="410" width="200" height="9" rx="2" fill="rgba(255,255,255,0.1)"/>
+        </svg>
+        <div class="masonry-item-overlay">
+          <span class="masonry-item-tag">Evento</span>
+          <span class="masonry-item-caption">Mostra illustratori salernitani — inaugurazione</span>
+        </div>
+        <div class="masonry-item-likes">❤ 61</div>
+      </div>
+
+      <div class="masonry-item reveal" data-cat="biblioteca" onclick="apriLightbox(9)">
+        <svg class="photo-placeholder" viewBox="0 0 400 380" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="380" fill="#1B3A5C"/>
+          <rect x="0" y="280" width="400" height="100" fill="rgba(27,58,92,0.8)"/>
+          <rect x="0" y="0" width="400" height="280" fill="#2a4f7a"/>
+          <circle cx="200" cy="140" r="90" fill="rgba(232,168,56,0.08)"/>
+          <rect x="60" y="40" width="8" height="200" fill="rgba(255,255,255,0.15)"/>
+          <rect x="80" y="60" width="6" height="180" fill="rgba(255,255,255,0.1)"/>
+          <rect x="314" y="40" width="8" height="200" fill="rgba(255,255,255,0.15)"/>
+          <rect x="330" y="60" width="6" height="180" fill="rgba(255,255,255,0.1)"/>
+          <text x="200" y="170" font-family="Georgia" font-size="52" text-anchor="middle" fill="rgba(232,168,56,0.25)">⬛</text>
+        </svg>
+        <div class="masonry-item-overlay">
+          <span class="masonry-item-tag">Biblioteca</span>
+          <span class="masonry-item-caption">Ingresso della biblioteca — Via Sichelgaita</span>
+        </div>
+        <div class="masonry-item-likes">❤ 79</div>
+      </div>
+
+      <div class="masonry-item reveal reveal-delay-1" data-cat="bambini" onclick="apriLightbox(10)">
+        <svg class="photo-placeholder" viewBox="0 0 400 440" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="440" fill="#3A6B4A"/>
+          <rect x="0" y="0" width="400" height="440" fill="rgba(58,107,74,0.9)"/>
+          <polygon points="100,100 200,60 300,100 340,200 300,300 200,340 100,300 60,200" fill="rgba(255,255,255,0.07)"/>
+          <text x="200" y="230" font-family="Georgia" font-size="72" text-anchor="middle" fill="rgba(255,255,255,0.2)">📚</text>
+          <rect x="80" y="340" width="240" height="12" rx="3" fill="rgba(255,255,255,0.15)"/>
+        </svg>
+        <div class="masonry-item-overlay">
+          <span class="masonry-item-tag">Bambini</span>
+          <span class="masonry-item-caption">Fiabe del mondo — bambini in ascolto</span>
+        </div>
+        <div class="masonry-item-likes">❤ 105</div>
+      </div>
+
+      <div class="masonry-item reveal reveal-delay-2" data-cat="libri" onclick="apriLightbox(11)">
+        <svg class="photo-placeholder" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="360" fill="#C4622D"/>
+          <rect x="50" y="60" width="300" height="200" rx="12" fill="rgba(0,0,0,0.2)"/>
+          <rect x="70" y="80" width="260" height="160" rx="8" fill="rgba(255,255,255,0.1)"/>
+          <rect x="90" y="100" width="180" height="16" rx="4" fill="rgba(255,255,255,0.4)"/>
+          <rect x="90" y="130" width="140" height="10" rx="3" fill="rgba(255,255,255,0.25)"/>
+          <rect x="90" y="153" width="160" height="10" rx="3" fill="rgba(255,255,255,0.2)"/>
+          <rect x="90" y="176" width="120" height="10" rx="3" fill="rgba(255,255,255,0.25)"/>
+          <rect x="80" y="290" width="240" height="12" rx="3" fill="rgba(255,255,255,0.2)"/>
+        </svg>
+        <div class="masonry-item-overlay">
+          <span class="masonry-item-tag">Libri</span>
+          <span class="masonry-item-caption">Consiglio di lettura — poesia del Mezzogiorno</span>
+        </div>
+        <div class="masonry-item-likes">❤ 33</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOLLOW CTA -->
+  <div class="follow-strip reveal">
+    <div class="follow-inner">
+      <h3>Seguici e rimani <em>aggiornato</em></h3>
+      <p>Non perdere nessun evento, novità o momento speciale della biblioteca. Unisciti alla nostra community online.</p>
+      <div class="follow-btns">
+        <a class="follow-btn ig" href="https://www.instagram.com" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          Seguici su Instagram
+        </a>
+        <a class="follow-btn fb" href="https://www.facebook.com" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          Metti Mi Piace su Facebook
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <strong>Biblioteca Comunale di Salerno</strong><br>
+    Gestita dalla Cooperativa Sociale Saremo Alberi<br><br>
+    Martedì 16.30–19.30 &nbsp;·&nbsp; Venerdì 16.30–19.30 &nbsp;·&nbsp; Sabato 10.00–13.00
+  </footer>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox-overlay" id="lightbox" onclick="if(event.target===this)chiudiLightbox()">
+    <div class="lightbox-inner">
+      <button class="lightbox-close" onclick="chiudiLightbox()">✕</button>
+      <svg id="lightbox-img" class="lightbox-img" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+        <rect width="800" height="500" fill="#1B3A5C"/>
+      </svg>
+      <div class="lightbox-caption">
+        <div>
+          <span id="lb-tag" style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--oro-sole);display:block;margin-bottom:4px"></span>
+          <span id="lb-caption" style="color:rgba(255,255,255,.8);font-size:15px"></span>
+        </div>
+        <div class="lightbox-nav">
+          <button class="lb-nav-btn" onclick="navigaLightbox(-1)">←</button>
+          <button class="lb-nav-btn" onclick="navigaLightbox(1)">→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── NAV hamburger ──
+    function toggleMenu() {
+      const nav = document.getElementById('nav-links');
+      const btn = document.getElementById('hamburger');
+      nav.classList.toggle('open');
+      btn.classList.toggle('open');
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.nav-links a').forEach(function(a) {
+        a.addEventListener('click', function() {
+          document.getElementById('nav-links').classList.remove('open');
+          document.getElementById('hamburger').classList.remove('open');
+        });
+      });
+    });
+
+    // ── SCROLL REVEAL ──
+    const reveals = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    reveals.forEach(el => obs.observe(el));
+    setTimeout(() => {
+      reveals.forEach(el => {
+        if(el.getBoundingClientRect().top < window.innerHeight){ el.classList.add('visible'); obs.unobserve(el); }
+      });
+    }, 80);
+
+    // ── FILTRO GALLERIA ──
+    function filtraFoto(cat, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const items = document.querySelectorAll('.masonry-item');
+      items.forEach(item => {
+        if (cat === 'tutti' || item.dataset.cat === cat) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    }
+
+    // ── LIGHTBOX ──
+    const fotoData = [
+      { tag:'Evento', caption:'Presentazione "Voci del Sud" — Sala eventi', color:'#1B3A5C' },
+      { tag:'Biblioteca', caption:'La nostra scaffalatura — sezione narrativa', color:'#2E6DA4' },
+      { tag:'Bambini', caption:'Letture animate — piccoli lettori in cerchio', color:'#3A6B4A' },
+      { tag:'Libri', caption:'Il libro del mese — selezione estiva', color:'#6B4C3B' },
+      { tag:'Evento', caption:'Incontro con l\'autore — sala piena', color:'#C4622D' },
+      { tag:'Biblioteca', caption:'La sala lettura al mattino — luce naturale', color:'#1B3A5C' },
+      { tag:'Bambini', caption:'Laboratorio origami — mani creative', color:'#E8A838' },
+      { tag:'Libri', caption:'Nuovi arrivi — questa settimana in biblioteca', color:'#2E4057' },
+      { tag:'Evento', caption:'Mostra illustratori salernitani — inaugurazione', color:'#5C4033' },
+      { tag:'Biblioteca', caption:'Ingresso della biblioteca — Via Sichelgaita', color:'#1B3A5C' },
+      { tag:'Bambini', caption:'Fiabe del mondo — bambini in ascolto', color:'#3A6B4A' },
+      { tag:'Libri', caption:'Consiglio di lettura — poesia del Mezzogiorno', color:'#C4622D' },
+    ];
+
+    let lbIndex = 0;
+
+    function apriLightbox(i) {
+      lbIndex = i;
+      aggiornaLightbox();
+      document.getElementById('lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function aggiornaLightbox() {
+      const f = fotoData[lbIndex];
+      const svg = document.getElementById('lightbox-img');
+      svg.style.background = f.color;
+      svg.innerHTML = `
+        <rect width="800" height="500" fill="${f.color}"/>
+        <circle cx="400" cy="200" r="130" fill="rgba(255,255,255,0.06)"/>
+        <rect x="160" y="350" width="480" height="18" rx="4" fill="rgba(255,255,255,0.15)"/>
+        <rect x="240" y="385" width="320" height="12" rx="3" fill="rgba(255,255,255,0.1)"/>
+      `;
+      document.getElementById('lb-tag').textContent = f.tag;
+      document.getElementById('lb-caption').textContent = f.caption;
+    }
+
+    function chiudiLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function navigaLightbox(dir) {
+      lbIndex = (lbIndex + dir + fotoData.length) % fotoData.length;
+      aggiornaLightbox();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') chiudiLightbox();
+      if (e.key === 'ArrowRight') navigaLightbox(1);
+      if (e.key === 'ArrowLeft') navigaLightbox(-1);
+    });
+  </script>
+
+</body>
+</html>
