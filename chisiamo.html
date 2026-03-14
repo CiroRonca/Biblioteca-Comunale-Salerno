@@ -28,8 +28,7 @@
       color: var(--grigio-scuro);
       overflow-x: hidden;
     }
-
-    /* ── NAV ── */
+/* ── NAV ── */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -52,19 +51,20 @@
     }
 
     .nav-logo-icon {
-      width: 40px; height: 40px;
-      background: var(--terracotta);
-      border-radius: 6px;
+      height: 48px; /* Un po' più alto di prima, si incastra perfetto nella barra */
+      width: auto; /* Lasciamo che la larghezza si adatti alla tua foto */
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Playfair Display', serif;
-      font-weight: 900;
-      font-size: 20px;
-      color: white;
-      letter-spacing: -1px;
     }
 
+    .nav-logo-icon img {
+      height: 100%;
+      width: auto; /* Mantiene le proporzioni originali del tuo logo */
+      object-fit: contain; 
+      border-radius: 4px; /* Opzionale: smussa leggermente gli angoli della foto */
+    }
+    
     .nav-logo-text {
       display: flex;
       flex-direction: column;
@@ -116,9 +116,6 @@
     }
 
     .nav-links a:hover::after { width: 100%; }
-
-    .nav-links a.active { color: var(--terracotta); }
-    .nav-links a.active::after { width: 100%; }
 
     .nav-cta {
       background: var(--terracotta);
@@ -575,7 +572,7 @@
   <!-- NAV -->
   <nav>
     <a class="nav-logo" href="index.html">
-      <div class="nav-logo-icon"> <img src="logo.png" alt="Logo Biblioteca"> </div>
+      <div class="nav-logo-icon"> <img src="Logo.png" alt="Logo Biblioteca"> </div>
       <div class="nav-logo-text">
         <span>Biblioteca Comunale</span>
         <span>Salerno</span>

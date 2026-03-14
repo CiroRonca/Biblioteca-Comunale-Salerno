@@ -29,7 +29,7 @@
       overflow-x: hidden;
     }
 
-    /* ── NAV ── */
+   /* ── NAV ── */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -39,7 +39,7 @@
       justify-content: space-between;
       padding: 0 48px;
       height: 72px;
-      background: rgba(253, 250, 244, 0.95);
+      background: rgba(253, 250, 244, 0.92);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(196, 98, 45, 0.15);
     }
@@ -52,57 +52,82 @@
     }
 
     .nav-logo-icon {
-      width: 40px; height: 40px;
-      background: var(--terracotta);
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Playfair Display', serif;
-      font-weight: 900; font-size: 20px;
-      color: white;
+      height: 48px; /* Un po' più alto di prima, si incastra perfetto nella barra */
+      width: auto; /* Lasciamo che la larghezza si adatti alla tua foto */
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
+    .nav-logo-icon img {
+      height: 100%;
+      width: auto; /* Mantiene le proporzioni originali del tuo logo */
+      object-fit: contain; 
+      border-radius: 4px; /* Opzionale: smussa leggermente gli angoli della foto */
+    }
+    
     .nav-logo-text {
-      display: flex; flex-direction: column; line-height: 1.1;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
     }
 
     .nav-logo-text span:first-child {
       font-family: 'Playfair Display', serif;
-      font-weight: 700; font-size: 13px;
+      font-weight: 700;
+      font-size: 13px;
       color: var(--blu-mare);
-      letter-spacing: 0.05em; text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
 
     .nav-logo-text span:last-child {
-      font-size: 11px; color: var(--grigio-medio);
-      font-weight: 300; letter-spacing: 0.08em; text-transform: uppercase;
+      font-size: 11px;
+      color: var(--grigio-medio);
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
-    /* ── MENU DI NAVIGAZIONE ── */
     .nav-links {
       display: flex;
-      list-style: none;
       align-items: center;
       gap: 32px;
-      margin: 0;
-      padding: 0;
+      list-style: none;
     }
 
     .nav-links a {
-      text-decoration: none;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       color: var(--grigio-scuro);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
       position: relative;
-      transition: color 0.3s ease;
-      letter-spacing: 0.02em;
+      padding-bottom: 2px;
     }
 
-    .nav-links a:hover {
-      color: var(--terracotta); 
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--terracotta);
+      transition: width 0.3s ease;
     }
 
-    .nav-links a.active { color: var(--terracotta); }
-    .nav-links a.active::after { width: 100%; }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      background: var(--terracotta);
+      color: white !important;
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-weight: 600 !important;
+    }
+
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: #a8501f !important; }
 
     /* Bottone Accedi */
     .nav-links .nav-cta {
@@ -596,7 +621,7 @@
 
 <nav>
   <a class="nav-logo" href="index.html">
-    <div class="nav-logo-icon"> <img src="logo.png" alt="Logo Biblioteca"> </div>
+    <div class="nav-logo-icon"> <img src="Logo.png" alt="Logo Biblioteca"> </div>
     <div class="nav-logo-text">
       <span>Biblioteca Comunale</span>
       <span>Salerno</span>
