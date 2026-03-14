@@ -382,10 +382,10 @@
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-section-label">Principale</div>
-      <a class="sidebar-item active" onclick="showTab('scanner'); setActive(this)">
+      <a class="sidebar-item active" id="sidebtn-scanner" onclick="switchView('scanner')">
         <span class="s-icon">📷</span> Scanner ISBN
       </a>
-      <a class="sidebar-item" onclick="showTab('catalogo'); setActive(this)">
+      <a class="sidebar-item" id="sidebtn-catalogo" onclick="switchView('catalogo')">
         <span class="s-icon">📚</span> Gestione Catalogo
         <span class="badge" id="badge-count">0</span>
       </a>
@@ -429,10 +429,10 @@
 
       <!-- TABS -->
       <div class="section-tabs">
-        <button class="tab-btn active" onclick="showTab('scanner'); this.closest('.section-tabs').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">
+        <button class="tab-btn active" id="topbtn-scanner" onclick="switchView('scanner')">
           📷 Scanner ISBN
         </button>
-        <button class="tab-btn" onclick="showTab('catalogo'); this.closest('.section-tabs').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">
+        <button class="tab-btn" id="topbtn-catalogo" onclick="switchView('catalogo')">
           📚 Gestione Catalogo
         </button>
       </div>
@@ -469,18 +469,25 @@
               <div class="panel-card-body">
 
                 <div class="form-group">
-                  <label>Codice ISBN</label>
-                  <input type="text" id="isbnInput" class="isbn-field" placeholder="Attendo la scansione…" readonly />
+                  <label>Codice ISBN <span style="font-weight:400;color:var(--grigio-medio);text-transform:none;letter-spacing:0">(opzionale)</span></label>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <input type="text" id="isbnInput" class="isbn-field" placeholder="Scansiona o digita manualmente…" style="flex:1" />
+                    <button type="button" id="btn-cerca-isbn" onclick="cercaIsbnManuale()" style="
+                      padding:11px 14px; background:var(--blu-cielo); color:white;
+                      border:none; border-radius:9px; font-family:'DM Sans',sans-serif;
+                      font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;
+                      transition:background .2s;" title="Cerca su Google Books">🔍 Cerca</button>
+                  </div>
                 </div>
 
                 <div class="form-group">
-                  <label>Titolo</label>
-                  <input type="text" id="titoloInput" placeholder="Il titolo apparirà automaticamente" />
+                  <label>Titolo <span style="color:var(--terracotta)">*</span></label>
+                  <input type="text" id="titoloInput" placeholder="Inserisci il titolo del libro" oninput="abilitaSalva()" />
                 </div>
 
                 <div class="form-group">
                   <label>Autore</label>
-                  <input type="text" id="autoreInput" placeholder="L'autore apparirà automaticamente" />
+                  <input type="text" id="autoreInput" placeholder="Nome Cognome dell'autore" />
                 </div>
 
                 <div class="form-row">
@@ -617,6 +624,7 @@
               </div>
               <div class="table-actions">
                 <button class="btn-export csv" onclick="esportaCSV()">⬇ Esporta CSV</button>
+                <button class="btn-export" onclick="svuotaCSVStorage()" style="background:#e67e22" title="Svuota il file CSV salvato">🗑 Svuota CSV</button>
                 <button class="btn-export" onclick="svuotaDB()" style="background:#c0392b">🗑 Svuota DB</button>
               </div>
             </div>
@@ -689,14 +697,25 @@
     aggiornaOrologio();
     setInterval(aggiornaOrologio, 30000);
 
-    // ── TABS ──
-    function showTab(name) {
+    // ── NAVIGAZIONE UNIFICATA ──
+    const VIEW_TITLES = {
+      scanner: 'Scanner <span>ISBN</span>',
+      catalogo: 'Gestione <span>Catalogo</span>'
+    };
+    function switchView(name) {
+      // Pannelli
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       document.getElementById('panel-' + name).classList.add('active');
-    }
-    function setActive(el) {
-      document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-      el.classList.add('active');
+      // Tab superiori
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('topbtn-' + name).classList.add('active');
+      // Sidebar
+      document.querySelectorAll('.sidebar-item[id^="sidebtn"]').forEach(i => i.classList.remove('active'));
+      document.getElementById('sidebtn-' + name).classList.add('active');
+      // Topbar title
+      document.querySelector('.topbar-title').innerHTML = VIEW_TITLES[name] || 'Area <span>Amministrativa</span>';
+      // Se catalogo: aggiorna preview CSV
+      if (name === 'catalogo') aggiornaCsvPreview();
     }
 
     // ── SCANNER ──
@@ -722,6 +741,14 @@
     }
 
     function onScanError() {}
+
+    // ISBN digitato manualmente → cerca su Google Books
+    function cercaIsbnManuale() {
+      const isbn = document.getElementById('isbnInput').value.trim();
+      if (!isbn) { mostraToast('error', '⚠️ Inserisci un codice ISBN prima di cercare'); return; }
+      setStatus('loading', 'Cerco ISBN ' + isbn + ' su Google Books…');
+      cercaLibro(isbn);
+    }
 
     function resetScanner() {
       svuotaForm();
@@ -771,7 +798,11 @@
       }
     }
 
-    // ── COLORI COPERTINA (come nel JSON del catalogo) ──
+    // Abilita il bottone Salva non appena c'è un titolo (ISBN non richiesto)
+    function abilitaSalva() {
+      const titolo = document.getElementById('titoloInput').value.trim();
+      document.getElementById('btn-salva').disabled = !titolo;
+    }
     const COLORI = ['#1B3A5C','#2E6DA4','#C4622D','#E8A838','#3A6B4A','#6B4C3B','#5C4033','#2E4057'];
     let nextId = 2000; // id progressivo per i nuovi libri
 
@@ -808,6 +839,7 @@
       };
 
       db.push(libro);
+      appendRigaCSV(libro);
       aggiuntiOggi++;
       aggiornaStats();
       aggiornaTabella();
@@ -824,7 +856,8 @@
       aggiornaOutputJSON();
       document.getElementById('output-card').style.display = 'block';
 
-      mostraToast('success', `✅ "${libro.titolo}" aggiunto al catalogo!`);
+      const totCSV = getRigheCSV().length;
+      mostraToast('success', `✅ "${libro.titolo}" aggiunto — ${totCSV} righe nel CSV`);
       svuotaForm();
       avviaScanner();
     }
@@ -863,24 +896,28 @@
         '/* ── Incolla questi blocchi nel tuo array JSON ── */\n\n' + jsonStr + ',';
     }
 
-    // ── ANTEPRIMA CSV IN PAGINA ──
+    // ── ANTEPRIMA CSV IN PAGINA (legge da localStorage) ──
     function aggiornaCsvPreview() {
-      document.getElementById('csv-count').textContent = db.length;
+      const righe = getRigheCSV();
+      document.getElementById('csv-count').textContent = righe.length;
       const tbody = document.getElementById('csv-preview-body');
-      tbody.innerHTML = db.map((l, i) => {
-        const bg = i % 2 === 0 ? '#fff' : '#f9fafb';
-        const isNew = i === db.length - 1;
-        const rowStyle = isNew ? 'background:#f0faf4;' : `background:${bg};`;
-        return `<tr style="${rowStyle}">
-          <td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.titolo}</td>
-          <td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;white-space:nowrap">${l.autore}</td>
-          <td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;color:#888">${l.anno}</td>
-          <td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;color:#888">${l.pagine && l.pagine !== '—' ? l.pagine : ''}</td>
-          <td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;color:#888;font-family:monospace">${l.isbn || ''}</td>
-          <td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;color:#888">${l.collocazione && l.collocazione !== '—' ? l.collocazione : ''}</td>
-        </tr>`;
+      if (righe.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:16px;text-align:center;color:#888;font-family:sans-serif">Nessuna riga salvata</td></tr>';
+        return;
+      }
+      tbody.innerHTML = righe.map((riga, i) => {
+        const cols = riga.split(',').map(c => c.replace(/^"|"$/g,'').replace(/""/g,'"'));
+        const isNew = i === righe.length - 1;
+        const bg = isNew ? '#f0faf4' : (i % 2 === 0 ? '#fff' : '#f9fafb');
+        return '<tr style="background:' + bg + '">' +
+          '<td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (cols[0]||'') + '</td>' +
+          '<td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;white-space:nowrap">' + (cols[1]||'') + '</td>' +
+          '<td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;color:#888">' + (cols[2]||'') + '</td>' +
+          '<td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;color:#888">' + (cols[5]||'') + '</td>' +
+          '<td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;color:#888;font-family:monospace">' + (cols[6]||'') + '</td>' +
+          '<td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;color:#888">' + (cols[7]||'') + '</td>' +
+          '</tr>';
       }).join('');
-      // Scroll all'ultima riga
       const wrap = tbody.closest('div');
       if (wrap) setTimeout(() => { wrap.scrollTop = wrap.scrollHeight; }, 50);
     }
@@ -897,31 +934,48 @@
       });
     }
 
-    // ── SCARICA CSV (CatalogoGS.csv) ──
+    // ── CSV CUMULATIVO con localStorage ──
+    const CSV_KEY = 'catalogoGS_righe';
+    const CSV_HEADER = 'Titolo,Autore,Anno,Editore,Genere,Pagine,Codice ISBN,Collocazione';
+
+    function getRigheCSV() {
+      try { return JSON.parse(localStorage.getItem(CSV_KEY) || '[]'); }
+      catch { return []; }
+    }
+    function saveRigheCSV(righe) {
+      localStorage.setItem(CSV_KEY, JSON.stringify(righe));
+    }
+    function appendRigaCSV(libro) {
+      const pagine = libro.pagine && libro.pagine !== '—' ? libro.pagine : '';
+      const collocazione = libro.collocazione && libro.collocazione !== '—' ? libro.collocazione : '';
+      const riga = [
+        '"' + libro.titolo.replace(/"/g, '""') + '"',
+        '"' + libro.autore.replace(/"/g, '""') + '"',
+        libro.anno, libro.editore, libro.genere,
+        pagine, libro.isbn || '', collocazione
+      ].join(',');
+      const righe = getRigheCSV();
+      righe.push(riga);
+      saveRigheCSV(righe);
+      return righe.length;
+    }
     function scaricaCSV() {
-      if (db.length === 0) { mostraToast('error', 'Nessun libro da esportare'); return; }
-      const header = ['Titolo','Autore','Anno','Editore','Genere','Pagine','Codice ISBN','Collocazione'];
-      const righe = db.map(l => {
-        const pagine = l.pagine && l.pagine !== '—' ? l.pagine : '';
-        const collocazione = l.collocazione && l.collocazione !== '—' ? l.collocazione : '';
-        return [
-          `"${l.titolo.replace(/"/g,'""')}"`,
-          `"${l.autore.replace(/"/g,'""')}"`,
-          l.anno,
-          l.editore,
-          l.genere,
-          pagine,
-          l.isbn || '',
-          collocazione
-        ].join(',');
-      });
-      const csv = [header.join(','), ...righe].join('\n');
+      const righe = getRigheCSV();
+      if (righe.length === 0) { mostraToast('error', 'Nessun libro nel CSV — aggiungi prima un libro'); return; }
+      const csv = [CSV_HEADER, ...righe].join('\n');
       const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = 'CatalogoGS.csv';
-      a.click(); URL.revokeObjectURL(url);
-      mostraToast('success', '✅ CatalogoGS.csv scaricato!');
+      a.href = url; a.download = 'CatalogoGS.csv'; a.click();
+      URL.revokeObjectURL(url);
+      mostraToast('success', 'CatalogoGS.csv scaricato (' + righe.length + ' righe totali)');
+    }
+    function svuotaCSVStorage() {
+      apriConfirm('Svuota CSV', 'Cancella tutte le righe salvate nel CSV? Non è reversibile.', () => {
+        localStorage.removeItem(CSV_KEY);
+        aggiornaCsvPreview();
+        mostraToast('success', 'CSV svuotato');
+      });
     }
 
     function svuotaForm() {
@@ -931,7 +985,7 @@
         el.classList.remove('filled');
       });
       document.getElementById('btn-salva').disabled = true;
-      setStatus('scanning', 'Scanner attivo — inquadra il codice ISBN del libro');
+      setStatus('scanning', 'Scanner attivo — inquadra il codice ISBN, oppure inseriscilo a mano');
     }
 
     // ── TABELLA ──
@@ -999,13 +1053,13 @@
     function aggiornaStats() {
       document.getElementById('stat-totale').textContent = db.length;
       document.getElementById('stat-oggi').textContent = aggiuntiOggi;
-      document.getElementById('stat-isbn').textContent = db.filter(l => l.isbn !== '—').length;
+      document.getElementById('stat-isbn').textContent = db.filter(l => l.isbn && l.isbn !== '—' && l.isbn !== '').length;
       document.getElementById('stat-nopagine').textContent = db.filter(l => l.pagine === '—').length;
       document.getElementById('badge-count').textContent = db.length;
     }
 
     // ── EXPORT CSV (dal tab catalogo) ──
-    function esportaCSV() { scaricaCSV(false); }
+    function esportaCSV() { scaricaCSV(); }
 
     // ── TOAST ──
     function mostraToast(tipo, msg) {
@@ -1035,6 +1089,11 @@
 
     // ── INIT ──
     aggiornaStats();
+    // Mostra subito conteggio righe CSV già salvate
+    const _csvInit = getRigheCSV();
+    if (_csvInit.length > 0) {
+      document.getElementById('csv-count').textContent = _csvInit.length;
+    }
     avviaScanner();
   </script>
 
