@@ -44,21 +44,20 @@
     }
 
     .nav-logo-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 6px;
+      height: 48px; /* Un po' più alto di prima, si incastra perfetto nella barra */
+      width: auto; /* Lasciamo che la larghezza si adatti alla tua foto */
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
     }
 
     .nav-logo-icon img {
-      width: 100%;
       height: 100%;
+      width: auto; /* Mantiene le proporzioni originali del tuo logo */
       object-fit: contain; 
+      border-radius: 4px; /* Opzionale: smussa leggermente gli angoli della foto */
     }
-
+    
     .nav-logo-text {
       display: flex;
       flex-direction: column;
