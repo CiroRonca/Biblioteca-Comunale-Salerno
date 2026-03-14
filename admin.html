@@ -264,6 +264,15 @@
     .btn-export:hover { background: #142d48; }
     .btn-export.csv { background: var(--verde-patio); }
     .btn-export.csv:hover { background: #2d5438; }
+    .btn-export.copied { background: var(--verde-patio) !important; }
+    .out-tab-btn {
+      padding: 6px 14px; border-radius: 7px; border: 1.5px solid #d0d6e0;
+      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+      cursor: pointer; background: transparent; color: var(--grigio-medio);
+      transition: all .2s;
+    }
+    .out-tab-btn.active { background: var(--blu-mare); color: white; border-color: var(--blu-mare); font-weight: 600; }
+    .out-tab-btn:hover:not(.active) { border-color: var(--blu-mare); color: var(--blu-mare); }
 
     .table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid #e8eaed; }
     table { width: 100%; border-collapse: collapse; background: white; }
@@ -506,6 +515,62 @@
               </div>
             </div>
 
+            <!-- OUTPUT JSON + CSV -->
+            <div class="panel-card" id="output-card" style="display:none">
+              <div class="panel-card-header" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span class="icon">📄</span>
+                  <h3>Output catalogo</h3>
+                </div>
+                <div style="display:flex;gap:6px">
+                  <button class="out-tab-btn active" id="otab-csv" onclick="switchOutTab('csv')">📊 CSV</button>
+                  <button class="out-tab-btn" id="otab-json" onclick="switchOutTab('json')">🧩 JSON</button>
+                </div>
+              </div>
+
+              <!-- CSV VIEW -->
+              <div id="out-csv">
+                <div style="padding:10px 20px;background:#f0faf4;border-bottom:1px solid #d4edda;font-size:12px;color:#2d6a4f;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                  <span>✅ <strong id="csv-count">0</strong> righe nel file CatalogoGS.csv — clicca il bottone per scaricare</span>
+                  <button class="btn-export csv" onclick="scaricaCSV()" style="font-size:11px;padding:6px 14px">⬇ Scarica CatalogoGS.csv</button>
+                </div>
+                <div style="overflow-x:auto;max-height:280px;overflow-y:auto">
+                  <table id="csv-preview-table" style="width:100%;border-collapse:collapse;font-size:12px;font-family:'Courier New',monospace">
+                    <thead style="position:sticky;top:0">
+                      <tr style="background:#1B3A5C;color:rgba(255,255,255,.8)">
+                        <th style="padding:8px 12px;text-align:left;font-weight:600;white-space:nowrap">Titolo</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:600;white-space:nowrap">Autore</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:600;white-space:nowrap">Anno</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:600;white-space:nowrap">Pagine</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:600;white-space:nowrap">ISBN</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:600;white-space:nowrap">Collocazione</th>
+                      </tr>
+                    </thead>
+                    <tbody id="csv-preview-body"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- JSON VIEW -->
+              <div id="out-json" style="display:none">
+                <div style="padding:10px 20px;background:#f8f9fa;border-bottom:1px solid #e8eaed;font-size:12px;color:var(--grigio-medio);display:flex;align-items:center;justify-content:space-between;gap:12px">
+                  <span>💡 Incolla questi blocchi nell'array JSON del tuo catalogo</span>
+                  <button class="btn-export" onclick="copiaJSON()" id="btn-copia-json" style="font-size:11px;padding:6px 14px">📋 Copia JSON</button>
+                </div>
+                <pre id="json-output" style="
+                  background:#0f1117; color:#a8d8a8;
+                  padding:20px; margin:0;
+                  font-size:12px; line-height:1.7;
+                  overflow-x:auto;
+                  font-family:'Courier New',monospace;
+                  border-radius:0 0 14px 14px;
+                  white-space:pre;
+                  max-height:280px;
+                  overflow-y:auto;
+                "></pre>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -706,6 +771,10 @@
       }
     }
 
+    // ── COLORI COPERTINA (come nel JSON del catalogo) ──
+    const COLORI = ['#1B3A5C','#2E6DA4','#C4622D','#E8A838','#3A6B4A','#6B4C3B','#5C4033','#2E4057'];
+    let nextId = 2000; // id progressivo per i nuovi libri
+
     // ── SALVA LIBRO ──
     function salvaLibro() {
       const isbn = document.getElementById('isbnInput').value.trim();
@@ -716,11 +785,24 @@
 
       if (!titolo) { mostraToast('error', '⚠️ Inserisci almeno il titolo'); return; }
 
+      // Costruiamo il campo "desc" nel formato esatto del catalogo
+      const descParts = [];
+      if (pagine) descParts.push(`Pagine: ${pagine} p.`);
+      if (collocazione) descParts.push(`Codice Collocazione: ${collocazione}`);
+      const desc = descParts.join(' | ') || 'N/D';
+
       const libro = {
-        id: Date.now(),
-        isbn: isbn || '—',
+        id: nextId++,
+        isbn: isbn || '',
         titolo,
-        autore: autore || 'Autore sconosciuto',
+        autore: autore ? autore + '.' : 'Autore sconosciuto.',
+        anno: 'N/D',
+        editore: 'N/D',
+        genere: 'Varia',
+        disponibile: true,
+        colore: COLORI[(nextId - 2001) % COLORI.length],
+        desc,
+        // campi extra per tabella admin
         pagine: pagine || '—',
         collocazione: collocazione || '—',
       };
@@ -734,13 +816,112 @@
       document.getElementById('anteprima-content').innerHTML = `
         <strong style="color:var(--blu-mare);font-size:16px">${libro.titolo}</strong><br>
         <span style="color:var(--grigio-medio)">di ${libro.autore}</span><br>
-        <span>📄 ${libro.pagine} pagine &nbsp;·&nbsp; ISBN: ${libro.isbn} &nbsp;·&nbsp; Codice: ${libro.collocazione}</span>
+        <span>📄 ${libro.pagine} pagine &nbsp;·&nbsp; ISBN: ${libro.isbn || '—'} &nbsp;·&nbsp; Codice: ${libro.collocazione}</span>
       `;
       document.getElementById('anteprima-card').style.display = 'block';
 
-      mostraToast('success', `✅ "${libro.titolo}" salvato nel catalogo!`);
+      // Genera JSON output (tutti i libri aggiunti in sessione)
+      aggiornaOutputJSON();
+      document.getElementById('output-card').style.display = 'block';
+
+      mostraToast('success', `✅ "${libro.titolo}" aggiunto al catalogo!`);
       svuotaForm();
       avviaScanner();
+    }
+
+    // ── OUTPUT TABS ──
+    function switchOutTab(tab) {
+      document.getElementById('out-csv').style.display = tab === 'csv' ? 'block' : 'none';
+      document.getElementById('out-json').style.display = tab === 'json' ? 'block' : 'none';
+      document.getElementById('otab-csv').classList.toggle('active', tab === 'csv');
+      document.getElementById('otab-json').classList.toggle('active', tab === 'json');
+    }
+
+    // ── GENERA JSON NEL FORMATO DEL CATALOGO ──
+    function aggiornaOutputJSON() {
+      // Aggiorna anteprima CSV
+      aggiornaCsvPreview();
+
+      // Genera JSON
+      const jsonStr = db.map(l => {
+        const obj = {
+          id: l.id,
+          titolo: l.titolo,
+          autore: l.autore,
+          anno: l.anno,
+          editore: l.editore,
+          genere: l.genere,
+          disponibile: l.disponibile,
+          colore: l.colore,
+          desc: l.desc
+        };
+        return JSON.stringify(obj, null, 4)
+          .split('\n').map(line => '    ' + line).join('\n');
+      }).join(',\n');
+
+      document.getElementById('json-output').textContent =
+        '/* ── Incolla questi blocchi nel tuo array JSON ── */\n\n' + jsonStr + ',';
+    }
+
+    // ── ANTEPRIMA CSV IN PAGINA ──
+    function aggiornaCsvPreview() {
+      document.getElementById('csv-count').textContent = db.length;
+      const tbody = document.getElementById('csv-preview-body');
+      tbody.innerHTML = db.map((l, i) => {
+        const bg = i % 2 === 0 ? '#fff' : '#f9fafb';
+        const isNew = i === db.length - 1;
+        const rowStyle = isNew ? 'background:#f0faf4;' : `background:${bg};`;
+        return `<tr style="${rowStyle}">
+          <td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.titolo}</td>
+          <td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;white-space:nowrap">${l.autore}</td>
+          <td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;color:#888">${l.anno}</td>
+          <td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;color:#888">${l.pagine && l.pagine !== '—' ? l.pagine : ''}</td>
+          <td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;color:#888;font-family:monospace">${l.isbn || ''}</td>
+          <td style="padding:7px 12px;border-bottom:1px solid #f0f2f5;color:#888">${l.collocazione && l.collocazione !== '—' ? l.collocazione : ''}</td>
+        </tr>`;
+      }).join('');
+      // Scroll all'ultima riga
+      const wrap = tbody.closest('div');
+      if (wrap) setTimeout(() => { wrap.scrollTop = wrap.scrollHeight; }, 50);
+    }
+
+    // ── COPIA JSON ──
+    function copiaJSON() {
+      const text = document.getElementById('json-output').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copia-json');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copiato!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    // ── SCARICA CSV (CatalogoGS.csv) ──
+    function scaricaCSV() {
+      if (db.length === 0) { mostraToast('error', 'Nessun libro da esportare'); return; }
+      const header = ['Titolo','Autore','Anno','Editore','Genere','Pagine','Codice ISBN','Collocazione'];
+      const righe = db.map(l => {
+        const pagine = l.pagine && l.pagine !== '—' ? l.pagine : '';
+        const collocazione = l.collocazione && l.collocazione !== '—' ? l.collocazione : '';
+        return [
+          `"${l.titolo.replace(/"/g,'""')}"`,
+          `"${l.autore.replace(/"/g,'""')}"`,
+          l.anno,
+          l.editore,
+          l.genere,
+          pagine,
+          l.isbn || '',
+          collocazione
+        ].join(',');
+      });
+      const csv = [header.join(','), ...righe].join('\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'CatalogoGS.csv';
+      a.click(); URL.revokeObjectURL(url);
+      mostraToast('success', '✅ CatalogoGS.csv scaricato!');
     }
 
     function svuotaForm() {
@@ -823,25 +1004,8 @@
       document.getElementById('badge-count').textContent = db.length;
     }
 
-    // ── EXPORT CSV ──
-    function esportaCSV() {
-      if (db.length === 0) { mostraToast('error', 'Nessun libro da esportare'); return; }
-      const header = ['Titolo','Autore','Pagine','Codice ISBN','Collocazione'];
-      const righe = db.map(l => [
-        `"${l.titolo.replace(/"/g,'""')}"`,
-        `"${l.autore.replace(/"/g,'""')}"`,
-        l.pagine,
-        l.isbn,
-        l.collocazione
-      ].join(','));
-      const csv = [header.join(','), ...righe].join('\n');
-      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'catalogo-biblioteca-salerno.csv';
-      a.click(); URL.revokeObjectURL(url);
-      mostraToast('success', '✅ CSV esportato con successo!');
-    }
+    // ── EXPORT CSV (dal tab catalogo) ──
+    function esportaCSV() { scaricaCSV(false); }
 
     // ── TOAST ──
     function mostraToast(tipo, msg) {
